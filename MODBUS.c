@@ -1,6 +1,5 @@
-#include <STC15F2K60S2.H>
-#include <ProtocolParsing.H>
 #include <MODBUS.H>
+
 
 uchar code modbus_CRCH[]=  
 {  
@@ -44,29 +43,14 @@ uchar code modbus_CRCL[] =
 0x48, 0x49, 0x89, 0x4B, 0x8B, 0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C, 0x8C,  
 0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80,  
 0x40  
-};
-/*
-@函数名：CRC16校验函数
+};  
 
-@函数功能：用于CRC16校验
-
-@输入参数：
-	|序号	|变量名			|变量类型	|
-	|-------|---------------|-----------|
-	| 1		|要计算的数组	|uchar *	|
-	| 2		|数组长度		|uint		|
-	
-@输出参数：
-	return TYPE_CRC crc结构体，包括crc高字节和低字节
-
-@备注：
-*/
 TYPE_CRC CRC16(uchar *updata,uint len)  
 {  
-	TYPE_CRC xdata DataCRC;
-	uchar xdata uchCRCHi=0xff;  
-	uchar xdata uchCRCLo=0xff;  
-	uint  xdata uindex;  
+	TYPE_CRC DataCRC;
+	uchar uchCRCHi=0xff;  
+	uchar uchCRCLo=0xff;  
+	uint  uindex;  
 	while(len--)  
 	{  
 	  uindex = uchCRCHi ^ *updata++;  
@@ -79,160 +63,53 @@ TYPE_CRC CRC16(uchar *updata,uint len)
 	return DataCRC;  
 }  
 
-/*
-@函数名：协议打包V1.0
-
-@函数功能：用于智能实验室通信协议的打包
-
-@输入参数：
-	|序号	|变量名		|变量类型	|
-	|-------|-----------|-----------|
-	| 1		|设备地址	|uint		|
-	| 2		|设备标号	|uchar		|
-	| 3		|功能码		|uint		|
-	| 4		|数据长度	|uint		|
-	| 5		|数据		|uchar *	|
-	
-@输出参数：
-	return *OutPutBuf 打包完成的数组
-
-@备注：目前该函数所支持的最大打包长度为300字节
-*/
-char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,char *dat)
+char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
 {
-	uchar xdata OutPutBuf[300];
-	uint xdata buf_count = 0;
+	char xdata return_buf[10];
+	TYPE_CRC crc ;
 	
-	TYPE_CRC xdata crc;
-		
-	OutPutBuf[0] = 0x7e;
-	OutPutBuf[1] = addr >> 8;
-	OutPutBuf[2] = addr;
-	OutPutBuf[3] = num;
-	OutPutBuf[4] = com >> 8;
-	OutPutBuf[5] = com;
-	OutPutBuf[6] = len >> 8;
-	OutPutBuf[7] = len;
-
-	for(buf_count = 0;buf_count < (len - 10);buf_count++)
-	{
-		OutPutBuf[8+buf_count] = *dat;
-		dat++;
-	}
+	return_buf[0] = addr;
+	return_buf[1] = com;
+	return_buf[2] = reg_addr >> 8;
+	return_buf[3] = reg_addr;
+	return_buf[4] = len >> 8;
+	return_buf[5] = len;
 	
-	crc = CRC16(OutPutBuf,len - 2);
+	crc = CRC16(return_buf,6);
 	
-	OutPutBuf[len - 2] = crc.High;
-	OutPutBuf[len - 1] = crc.Low;
-		
-	return OutPutBuf;
+	
+	return_buf[6] = crc.High;
+	return_buf[7] = crc.Low;
+	
+	return return_buf;
 }
 
-/*
-@函数名：协议解包V1.0
-
-@函数功能：用于智能实验室通信协议的解包
-
-@输入参数：
-	|序号	|变量名		|变量类型	|
-	|-------|-----------|-----------|
-	| 1		|数据协议	|uchar *	|
-	
-@输出参数：
-	return TYPE_PACK 解析完成之后的结构体
-
-@备注：目前该函数所支持的最大打包长度为300字节
-*/
-TYPE_PACK UnpackAgreement(char * buf)
+char * ModbusParsing(uchar *buf)
 {
-	TYPE_PACK xdata pack;
-	TYPE_CRC xdata crc;
-	uchar xdata crcH,crcL,herd,count;
+	static xdata out_put[150];
+	int i;
+	int count = 0;
+	uchar len;
+	TYPE_CRC crc;
 
-	herd = buf[0];
-	pack.addr = buf[1] << 8 | buf[2];
-	pack.num  = buf[3];
-	pack.com  = buf[4] << 8 | buf[5];
-	pack.len  = buf[6] << 8 | buf[7];
-	pack.dat  = &buf[8];
-	
-	crcL = buf[pack.len - 2];
-	crcH = buf[pack.len - 1];	
-	
-	crc = CRC16(buf,pack.len-2);
-
-	for(count = 0;count <= pack.len;count++)
-		buf[count] = 0;
-	
-	if(herd != 0x7e)
+	len = buf[2];
+	for(i = 0;i<len;i++)
 	{
-		pack.error = FRAME_HARD_ERROR;
-		return pack;
+		out_put[count] = buf[count + 2];
+		count++;
 	}
-	else if(pack.addr != ADDRESS)
+	
+	crc = CRC16(buf,len + 3);
+	
+	if((crc.High == buf[len + 3]) && (crc.Low == buf[len + 4]))
 	{
-		pack.error = ADDRESS_ERROR;
-		return pack;
-	}
-	else if(pack.num != NUMBER)
-	{
-		pack.error = NUMBER_ERROR;
-		return pack;
-	}
-	else if(pack.len <10 | pack.len > 300)
-	{
-		pack.error = LENGTH_OF_ERROR;
-		return pack;
+		return out_put;
 	}
 	else
-	{		
-		if(crc.High == crcL && crc.Low == crcH)
-		{
-			pack.error = ERROR_NONE;
-			return pack;
-		}
-		else
-		{
-			pack.error = CRC_ERROR;
-			return pack;
-		}
+	{
+		return "000";
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

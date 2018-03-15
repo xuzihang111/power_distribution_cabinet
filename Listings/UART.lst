@@ -1,0 +1,106 @@
+C51 COMPILER V9.56.0.0   UART                                                              03/15/2018 21:03:59 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN .\Objects\UART.obj
+COMPILER INVOKED BY: D:\SoftWare\Keil\C51\BIN\C51.EXE UART.C OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\UART.lst) OBJECT(.\Objects\UART.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <UART.H>
+   3          
+   4          
+   5          void UartInit(void)             //9600bps@24.000MHz
+   6          {
+   7   1              SCON = 0x50;            //8位数据,可变波特率
+   8   1              AUXR |= 0x40;           //定时器1时钟为Fosc,即1T
+   9   1              AUXR &= 0xFE;           //串口1选择定时器1为波特率发生器
+  10   1              TMOD &= 0x0F;           //设定定时器1为16位自动重装方式
+  11   1              TL1 = 0x8F;             //设定定时初值
+  12   1              TH1 = 0xFD;             //设定定时初值
+  13   1              ET1 = 0;                //禁止定时器1中断
+  14   1              TR1 = 1;                //启动定时器1
+  15   1              
+  16   1      }
+  17          
+  18          void Uart2Init(void)            //9600bps@24.000MHz
+  19          {
+  20   1              S2CON |= 0x50;          //8位数据,可变波特率
+  21   1              AUXR |= 0x04;           //定时器2时钟为Fosc,即1T
+  22   1              T2L = 0x8F;                     //设定定时初值
+  23   1              T2H = 0xFD;                     //设定定时初值
+  24   1              AUXR |= 0x94;           //启动定时器2
+  25   1              IE2 |= 0x01;
+  26   1      }
+  27          
+  28          void Send1Data(char buf)//串口1发送单个字符
+  29          {
+  30   1              SBUF = buf;
+  31   1              while(!TI);
+  32   1              TI = 0;
+  33   1      }
+  34          
+  35          void Send1String(char *s,len)//串口1发送数组
+  36          {
+  37   1              int i;
+  38   1          for(i = 0; i < len;i++)      //检测字符串结束标志
+  39   1          {
+  40   2              Send1Data(*s++);         //发送当前字符
+  41   2          }
+  42   1      }
+  43          
+  44          void Uart2SendByte(char buf)//串口2发送单个字符
+  45          {
+  46   1              S2BUF = buf;
+  47   1              while(!(S2CON & 0x02));
+  48   1              S2CON &= ~0x02;
+  49   1              
+  50   1      }
+  51          
+  52          void Send2String(char *s,len)//串口2发送数组
+  53          {
+  54   1              int i;
+C51 COMPILER V9.56.0.0   UART                                                              03/15/2018 21:03:59 PAGE 2   
+
+  55   1          for(i = 0; i < len;i++)       //检测字符串结束标志
+  56   1          {
+  57   2              Uart2SendByte(*s++);      //发送当前字符
+  58   2          }
+  59   1      }
+  60          
+  61          
+  62          
+  63          
+  64          
+  65          
+  66          
+  67          
+  68          
+  69          
+  70          
+  71          
+  72          
+  73          
+  74          
+  75          
+  76          
+  77          
+  78          
+  79          
+  80          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    175    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      10
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

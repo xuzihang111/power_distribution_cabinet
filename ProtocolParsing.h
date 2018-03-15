@@ -18,10 +18,10 @@
 #define NO_DATA				5	//无数据
 #define CRC_ERROR			6	//crc检验未通过
 /**/
-typedef struct _TyteCRC{		//crc类，用于校验
-	unsigned char High;		
-	unsigned char Low;
-}TYPE_CRC;
+//typedef struct _TyteCRC{		//crc类，用于校验
+//	unsigned char High;		
+//	unsigned char Low;
+//}TYPE_CRC;
 
 typedef struct _TytePack{		//解析信息的结构体
 	char error;				//错误类型

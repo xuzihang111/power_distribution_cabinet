@@ -1,0 +1,6 @@
+".\Objects\≈‰µÁπÒ.obj",
+".\Objects\MODBUS.obj",
+".\Objects\ProtocolParsing.obj",
+".\Objects\UART.obj" 
+TO ".\Objects\≈‰µÁπÒ" 
+PRINT(".\Listings\≈‰µÁπÒ.m51") RAMSIZE(256) 

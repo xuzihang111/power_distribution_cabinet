@@ -1,0 +1,80 @@
+C51 COMPILER V9.56.0.0   ______                                                            03/15/2018 21:12:36 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE ______
+OBJECT MODULE PLACED IN .\Objects\配电柜.obj
+COMPILER INVOKED BY: D:\SoftWare\Keil\C51\BIN\C51.EXE 配电柜.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listi
+                    -ngs\配电柜.lst) OBJECT(.\Objects\配电柜.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <ProtocolParsing.H>
+   3          #include <MODBUS.H>
+   4          #include <UART.H>
+   5          
+   6          TYPE_PACK dat_buf;                      //解析信息的结构体
+   7          
+   8          char xdata UART1_recv_buf[300]; //接收缓存
+   9          uint UATR1_buf_count;                           //接收缓存计数
+  10          bit UATR1_clear_flag = 1;                       //接收缓存计数清除标志
+  11          bit UATR1_rece_flag;                            //接收标志
+  12          //char UATR1_send_data[6] = {0xa4,0x34,0x88,0x27,0xb3,0x2e};    //数据包中的数据部分
+  13          
+  14          
+  15          
+  16          void main()
+  17          {
+  18   1              while(1)
+  19   1              {
+  20   2                      
+  21   2              }
+  22   1      }
+  23          
+  24          
+  25          void Uart1() interrupt 4                                //串口2接收中断
+  26          {
+  27   1              static uint rece_len;                           //声明静态变量，用于存储实际接收到的字节数
+  28   1              if (RI)
+  29   1              {
+  30   2                      RI = 0;                                 //清除S2RI位
+  31   2                      if(SBUF == 0X7E && UATR1_clear_flag)    //判断到帧头
+  32   2                      {
+  33   3                              UATR1_buf_count = 0;                            //清除计数标志
+  34   3                              UATR1_clear_flag = 0;                           //清除计数标志清空标志
+  35   3                      }
+  36   2                      
+  37   2                      UART1_recv_buf[UATR1_buf_count] = SBUF; //将接收到的字符存储
+  38   2                      
+  39   2                      if(UATR1_buf_count == 7)                                //接收到了包长度数据
+  40   2                      {
+  41   3                              rece_len = UART1_recv_buf[6] << 8 | UART1_recv_buf[7];  //合成包长度数据
+  42   3                      }
+  43   2                      if(UATR1_buf_count == rece_len - 1)     //本包数据接收完毕
+  44   2                      {
+  45   3                              UATR1_rece_flag = 1;
+  46   3                      }
+  47   2                      UATR1_buf_count++;                      
+  48   2                      
+  49   2              }
+  50   1      }
+  51          
+  52          
+  53          
+  54          
+C51 COMPILER V9.56.0.0   ______                                                            03/15/2018 21:12:36 PAGE 2   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    134    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    300    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     15    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
