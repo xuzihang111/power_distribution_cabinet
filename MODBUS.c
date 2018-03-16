@@ -1,4 +1,5 @@
 #include <MODBUS.H>
+#include <STC15F2K60S2.H>
 
 
 uchar code modbus_CRCH[]=  
@@ -45,7 +46,7 @@ uchar code modbus_CRCL[] =
 0x40  
 };  
 
-TYPE_CRC CRC16(uchar *updata,uint len)  
+TYPE_CRC modbusCRC16(uchar *updata,uint len)  
 {  
 	TYPE_CRC DataCRC;
 	uchar uchCRCHi=0xff;  
@@ -75,7 +76,7 @@ char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
 	return_buf[4] = len >> 8;
 	return_buf[5] = len;
 	
-	crc = CRC16(return_buf,6);
+	crc = modbusCRC16(return_buf,6);
 	
 	
 	return_buf[6] = crc.High;
@@ -84,30 +85,42 @@ char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
 	return return_buf;
 }
 
-char * ModbusParsing(uchar *buf)
+TYPE_MODBUS ModbusParsing(uchar *buf)
 {
-	static xdata out_put[150];
-	int i;
+	
+	static uchar xdata out_put[150];
+//	int i;
 	int count = 0;
-	uchar len;
+//	uchar len;
+	TYPE_MODBUS modbus;
 	TYPE_CRC crc;
 
-	len = buf[2];
-	for(i = 0;i<len;i++)
+	modbus.len = buf[2];
+		
+	for(count = 0;count <= modbus.len;count++)
+		out_put[count] = 0;
+
+	for(count = 0;count<modbus.len;count++)
 	{
-		out_put[count] = buf[count + 2];
-		count++;
+		out_put[count] = buf[count + 3];
 	}
+	modbus.dat = &out_put[0];
 	
-	crc = CRC16(buf,len + 3);
-	
-	if((crc.High == buf[len + 3]) && (crc.Low == buf[len + 4]))
+	crc = modbusCRC16(buf,modbus.len + 3);
+
+	for(count = 0;count <= modbus.len;count++)
+		buf[count] = 0;
+
+	if((crc.High == buf[modbus.len + 4]) && (crc.Low == buf[modbus.len + 5]))
 	{
-		return out_put;
+		P62 = !P62;
+		modbus.error = 0;
+		return modbus;
 	}
 	else
 	{
-		return "000";
+		modbus.error = 1;
+		return modbus;
 	}
 }
 

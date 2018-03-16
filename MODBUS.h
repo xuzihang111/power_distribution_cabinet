@@ -10,8 +10,14 @@ typedef struct _TyteCRC{
 	unsigned char Low;
 }TYPE_CRC;
 
+typedef struct _TyteMODBUS{
+	uchar len;
+	uchar error;
+	uchar *dat;
+}TYPE_MODBUS;
+
 char * MakeModbus(uchar addr, uchar com, int reg_addr, int len);
-char * ModbusParsing(uchar *buf);
+TYPE_MODBUS ModbusParsing(uchar *buf);
 
 
 #endif

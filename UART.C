@@ -2,7 +2,7 @@
 #include <UART.H>
 
 
-void UartInit(void)		//9600bps@24.000MHz
+void Uart1Init(void)		//9600bps@24.000MHz
 {
 	SCON = 0x50;		//8位数据,可变波特率
 	AUXR |= 0x40;		//定时器1时钟为Fosc,即1T
@@ -12,7 +12,7 @@ void UartInit(void)		//9600bps@24.000MHz
 	TH1 = 0xFD;		//设定定时初值
 	ET1 = 0;		//禁止定时器1中断
 	TR1 = 1;		//启动定时器1
-	
+	ES = 1;
 }
 
 void Uart2Init(void)		//9600bps@24.000MHz

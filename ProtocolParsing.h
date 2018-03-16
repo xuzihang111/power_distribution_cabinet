@@ -23,7 +23,7 @@
 //	unsigned char Low;
 //}TYPE_CRC;
 
-typedef struct _TytePack{		//解析信息的结构体
+typedef struct _TytePack{	//解析信息的结构体
 	char error;				//错误类型
 	uint addr;				//本机地址
 	uchar num;				//本机编号

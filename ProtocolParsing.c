@@ -2,7 +2,7 @@
 #include <ProtocolParsing.H>
 #include <MODBUS.H>
 
-uchar code modbus_CRCH[]=  
+uchar code _CRCH[]=  
 {  
 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,  
 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,  
@@ -24,7 +24,7 @@ uchar code modbus_CRCH[]=
 0x40  
 };  
   
-uchar code modbus_CRCL[] =  
+uchar code _CRCL[] =  
 {  
 0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06, 0x07, 0xC7, 0x05, 0xC5, 0xC4,  
 0x04, 0xCC, 0x0C, 0x0D, 0xCD, 0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,  
@@ -70,8 +70,8 @@ TYPE_CRC CRC16(uchar *updata,uint len)
 	while(len--)  
 	{  
 	  uindex = uchCRCHi ^ *updata++;  
-	  uchCRCHi = uchCRCLo ^ modbus_CRCH[uindex];  
-	  uchCRCLo = modbus_CRCL[uindex];  
+	  uchCRCHi = uchCRCLo ^ _CRCH[uindex];  
+	  uchCRCLo = _CRCL[uindex];  
 	}  
     
 	DataCRC.High = uchCRCHi;
@@ -80,7 +80,9 @@ TYPE_CRC CRC16(uchar *updata,uint len)
 }  
 
 /*
-@函数名：协议打包V1.0
+@函数名：协议打包V1.1
+
+**发送缓存使用静态数组，防止程序混乱
 
 @函数功能：用于智能实验室通信协议的打包
 
@@ -98,13 +100,14 @@ TYPE_CRC CRC16(uchar *updata,uint len)
 
 @备注：目前该函数所支持的最大打包长度为300字节
 */
-char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,char *dat)
+char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,uchar *dat)
 {
-	uchar xdata OutPutBuf[300];
+	static uchar xdata OutPutBuf[300];
 	uint xdata buf_count = 0;
 	
 	TYPE_CRC xdata crc;
 		
+
 	OutPutBuf[0] = 0x7e;
 	OutPutBuf[1] = addr >> 8;
 	OutPutBuf[2] = addr;
@@ -114,11 +117,15 @@ char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,char *dat)
 	OutPutBuf[6] = len >> 8;
 	OutPutBuf[7] = len;
 
+	for(buf_count = 0;buf_count < len;buf_count++)
+		OutPutBuf[len] = 0;
+
 	for(buf_count = 0;buf_count < (len - 10);buf_count++)
 	{
-		OutPutBuf[8+buf_count] = *dat;
-		dat++;
+		OutPutBuf[8+buf_count] = dat[buf_count];
+		//dat++;
 	}
+	
 	
 	crc = CRC16(OutPutBuf,len - 2);
 	
@@ -129,7 +136,9 @@ char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,char *dat)
 }
 
 /*
-@函数名：协议解包V1.0
+@函数名：协议解包V1.1
+
+**V1.1 修复了函数的数据返回值为空的bug
 
 @函数功能：用于智能实验室通信协议的解包
 
@@ -141,20 +150,26 @@ char * AgreementPackaging(uint addr ,uchar num ,uint com ,uint len ,char *dat)
 @输出参数：
 	return TYPE_PACK 解析完成之后的结构体
 
-@备注：目前该函数所支持的最大打包长度为300字节
+@备注：目前该函数所支持的最大数据长度为300字节
 */
 TYPE_PACK UnpackAgreement(char * buf)
 {
 	TYPE_PACK xdata pack;
 	TYPE_CRC xdata crc;
 	uchar xdata crcH,crcL,herd,count;
-
+	uchar xdata dat_buf[300];
+	
 	herd = buf[0];
 	pack.addr = buf[1] << 8 | buf[2];
 	pack.num  = buf[3];
 	pack.com  = buf[4] << 8 | buf[5];
 	pack.len  = buf[6] << 8 | buf[7];
-	pack.dat  = &buf[8];
+//	pack.dat  = &buf[8];
+	
+	for(count = 0;count <= pack.len - 10 ;count++)
+		dat_buf[count] = buf[count + 8];
+	
+	pack.dat  = &dat_buf[0];
 	
 	crcL = buf[pack.len - 2];
 	crcH = buf[pack.len - 1];	
