@@ -16,10 +16,8 @@ bit UATR1_rece_flag;				//接收标志
 bit UATR2_rece_flag;				//接收标志
 unsigned char xdata modbus_count = 0;
 
-char UATR1_send_data[6] = {0x30,0x31,0x32,0x33,0x34,0x35};	//数据包中的数据部分
+char code aaa[] = {"Qwertyuiop[asdfghjkl;zxcvbnm,.qwertyuiopasdfghjkQwertyuiop[asdfghjkl;zxcvbnm,.qwertyuiopasdfghjk45346534543636"};
 
-//unsigned char xdata modbus_time = 0;
-//unsigned char xdata send_bud[50];
 void Delay1000ms()		//@24.000MHz
 {
 	unsigned char i, j, k;
@@ -53,20 +51,24 @@ void main()
 			if(dat_buf.error == -1)
 			{
 							P60 = !P60;
-				if(dat_buf.com == 0xff03)	//判断是否为查询指令
+				if(dat_buf.com == 0xff20)	//判断是否为查询指令
 				{
 //					Send2String(dat_buf.dat,dat_buf.len - 10);
 					P61 = !P61;
-					Send2String(MakeModbus(0x01,0x03,0x0025,2),8);
+					Send2String(MakeModbus(0x01,0x03,0x0017,25),8);
 					P66 = 0;
 					while(!UATR2_rece_flag);
 					P66 = 1;
 					modbus_struct_buf = ModbusParsing(modbus_buf);
+			Send1Data(0X00);
+			Send1Data(0X01);
+			Send1Data(0X17);
 					Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
 													modbus_struct_buf.dat),modbus_struct_buf.len + 10);
+					while(P07 == 1);
 					UATR2_rece_flag = 0;
 					modbus_count = 0;
-				
+				    P63 = !P63;
 				}
 								
 			}
@@ -106,13 +108,17 @@ void main()
 		
 		if(!P73)
 		{	
-			Send2String(MakeModbus(0x01,0x03,0x0025,2),8);
+			Send2String(MakeModbus(0x01,0x03,0x0017,50),8);
 			P66 = 0;
 			while(!UATR2_rece_flag);
 			P66 = 1;
 			modbus_struct_buf = ModbusParsing(modbus_buf);
-			Send1Data(modbus_struct_buf.len);
-			Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat),modbus_struct_buf.len + 10);
+			Send1Data(0X00);
+			Send1Data(0X01);
+			Send1Data(0X17);
+			Send1String(aaa,110);
+
+//			Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat),modbus_struct_buf.len + 10);
 			
 			P67 = 0;
 			while(!P73);
