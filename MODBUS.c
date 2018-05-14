@@ -1,5 +1,6 @@
 #include <MODBUS.H>
 #include <STC15F2K60S2.H>
+#include <math.H>
 
 
 uchar code modbus_CRCH[]=  
@@ -46,6 +47,14 @@ uchar code modbus_CRCL[] =
 0x40  
 };  
 
+float code prescribing[] = {0.500000, 0.250000, 0.125000, 0.062500, 0.031250, 0.015625, 0.007813, 0.003906, 
+							0.001953, 0.000977, 0.000488, 0.000244, 0.000122, 0.000061, 0.000031, 0.000015, 
+							0.000008, 0.000004, 0.000002, 0.000001, 0.000000, 0.000000, 0.000000};
+
+							
+							
+							
+							
 TYPE_CRC modbusCRC16(uchar *updata,uint len)  
 {  
 	TYPE_CRC DataCRC;
@@ -124,7 +133,45 @@ TYPE_MODBUS ModbusParsing(uchar *buf)	//解析modbus数据包
 	}
 }
 
-
+float calculate(char * buf)		//浮点型转换
+{
+	char xdata i;
+	unsigned char xdata S = 0, E = 0;
+	float xdata M = 0.0;
+	float xdata Val;
+	
+	S = buf[0] >> 7;
+	E = (buf[0] << 1) | (buf[1] >> 7);
+	E -= 127;
+	
+	for(i = 0;i < 8;i++)
+	{
+		if(buf[3] & 1)
+		{
+			M += prescribing[22 - i];
+		}
+		buf[3] >>= 1;
+	}
+	for(i = 0;i < 8;i++)
+	{
+		if(buf[2] & 1)
+		{
+			M += prescribing[14 - i];
+		}
+		buf[2] >>= 1;
+	}
+	for(i = 0;i < 7;i++)
+	{
+		if(buf[1] & 1)
+		{
+			M += prescribing[6 - i];
+		}
+		buf[1] >>= 1;
+	}
+	Val = (-1 * S) + pow(2, E) * (1 + M);
+	
+	return Val;
+}
 
 
 

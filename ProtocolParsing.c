@@ -179,36 +179,36 @@ TYPE_PACK UnpackAgreement(char * buf)
 	for(count = 0;count <= pack.len;count++)
 		buf[count] = 0;
 	
-	if(herd != 0x7e)
+	if(herd != 0x7e)//数据头错误
 	{
 		pack.error = FRAME_HARD_ERROR;
 		return pack;
 	}
-	else if(pack.addr != ADDRESS)
+	else if(pack.addr != ADDRESS)	//地址错误
 	{
 		pack.error = ADDRESS_ERROR;
 		return pack;
 	}
-	else if(pack.num != NUMBER)
+	else if(pack.num != NUMBER)		//设备编号错误
 	{
 		pack.error = NUMBER_ERROR;
 		return pack;
 	}
-	else if(pack.len <10 | pack.len > 300)
+	else if(pack.len <10 || pack.len > 300)//数据长度错误
 	{
 		pack.error = LENGTH_OF_ERROR;
 		return pack;
 	}
 	else
 	{		
-		if(crc.High == crcL && crc.Low == crcH)
+		if(crc.High == crcL && crc.Low == crcH)	//无错误
 		{
 			pack.error = ERROR_NONE;
 			return pack;
 		}
 		else
 		{
-			pack.error = CRC_ERROR;
+			pack.error = CRC_ERROR;	//crc校验错误
 			return pack;
 		}
 	}

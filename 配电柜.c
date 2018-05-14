@@ -3,12 +3,15 @@
 #include <MODBUS.H>
 #include <UART.H>
 #include <intrins.h>
-TYPE_PACK dat_buf;			//解析信息的结构体
+#include <ERROR.h>
+#include <stdio.H>
+
+TYPE_PACK dat_buf;		//解析信息的结构体
 TYPE_MODBUS xdata modbus_struct_buf;
 
 char xdata UART1_recv_buf[300];	//接收缓存
 char xdata modbus_buf[255];
-
+char xdata UART_send_buf[100];
 
 uint UATR1_buf_count;				//接收缓存计数
 bit UATR1_clear_flag = 1;			//接收缓存计数清除标志
@@ -19,47 +22,54 @@ unsigned char xdata modbus_count = 0;
 void Delay1000ms();
 void DataDarsing(void);
 void TheQuery(char addr,int reg,char len);
+void ASK_ok();
+void Init();
 
 
 void main()
 {
-	Uart1Init();			//115200bps@24.000MHz		通讯协议接收与发送
-	Uart2Init();			//9600bps@24.000MHz		modbus协议收发	
-	EA = 1;
-	P2M0 = 0XFF;
-	P2M1 = 0X00;
+	float xdata value1, value2, value3;
+	Init();
+//	Send2String("hrllo",5);
 	while(1)
 	{
+		WDT_CONTR |= 0X10;	//喂狗
+		stat_1 = 0;
 		DataDarsing();
 		
-		
-		if(!P73)//测试
+		if(!key)//测试 or 复位警报
 		{	
-			Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//度ABC三项电压有效值
-			P66 = 0;
+			Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//度ABC三项电压有效值	
+			stat_4 = 0;
 			while(!UATR2_rece_flag);	//等待数据返回
-			P66 = 1;
+			stat_4 = 1;
 			modbus_struct_buf = ModbusParsing(modbus_buf);
-			Send1Data(0X00);
-			Send1Data(0X01);
-			Send1Data(0X17);
-
-			Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat),modbus_struct_buf.len + 10);
 			
-			P67 = 0;
-			while(!P73);
-			P67 = 1;
+			value1 = calculate(modbus_struct_buf.dat);		//浮点型转换
+
+
+			sprintf(UART_send_buf,"Ua = %f",value1);
+			Send1String(UART_send_buf,8);
+			
+//			Send1Data(0X00);
+//			Send1Data(0X01);
+//			Send1Data(0X17);
+//			
+//			
+//			
+//			Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat),modbus_struct_buf.len + 10);
+			
+			while(!key);
 			UATR2_rece_flag = 0;
 			modbus_count = 0;
+			
+			speed(200,0,1);
+			error_4 = 1;
+			error_3 = 1;
+			error_2 = 1;
+			error_1 = 1;
 		}
-		if(!P70)
-		{
-			P24 = 0;
-		}
-		else
-		{
-			P24 = 1;
-		}
+
 	}
 }
 
@@ -69,7 +79,8 @@ void Uart1() interrupt 4						//串口1接收中断
 	static uint UART1_rece_len;					//声明静态变量，用于存储应接收到的字节数
 	if (RI)
 	{
-		RI = 0;         						//清除S2RI位
+		stat_3 = 0;
+		RI = 0;         						//清除S2RI位		
 		if(SBUF == 0X7E && UATR1_clear_flag)	//判断到帧头，数据处理完后UATR1_clear_flag要置1
 		{ 
 			UATR1_buf_count = 0;				//清除计数标志
@@ -86,9 +97,10 @@ void Uart1() interrupt 4						//串口1接收中断
 		{
 			UATR1_rece_flag = 1;				//对UART1_recv_buf处理完成后要将其清零
 		}
-		UATR1_buf_count++;			
+		UATR1_buf_count++;		
+		stat_3 = 1;		
 	}
-}
+}	
 
 void Uart2() interrupt 8
 {
@@ -143,7 +155,7 @@ void DataDarsing(void)
 		*/
 		if(dat_buf.error == -1)
 		{
-			P60 = !P60;
+			stat_2 = !stat_2;
 			if(dat_buf.com == 0xff00)	//判断是否为查询指令
 			{
 				TheQuery(1,0x0017,6);
@@ -172,38 +184,39 @@ void DataDarsing(void)
 			{
 				TheQuery(1,0x0049,3);
 			}
-//			else if(dat_buf.com == 0xff10)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff11)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff12)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff13)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff14)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff15)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff16)
-//			{
-//			
-//			}
-//			else if(dat_buf.com == 0xff17)
-//			{
-//			
-//			}
+			else if(dat_buf.com == 0xff10)	//断电
+			{
+				relay_1 = 0;
+				ASK_ok();
+			}
+			else if(dat_buf.com == 0xff11)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff12)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff13)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff14)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff15)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff16)
+			{
+			
+			}
+			else if(dat_buf.com == 0xff17)
+			{
+			
+			}
 			else if(dat_buf.com == 0xff18)
 			{
 				TheQuery(2,0x0017,6);
@@ -232,36 +245,27 @@ void DataDarsing(void)
 			{
 				TheQuery(2,0x0049,3);
 			}
+			else 
+			{
+				error_2 = 0;	//无有效指令
+			}
 		}
 		/*
 		*以下代码包含数据接收异常时的处理
 		*/
 		else							//如果接收到的数据包有误
 		{
-			P67 = !P67;;
-			if(dat_buf.error == 2)		//本机地址错误，进行相应的处理，可忽略，下同
+			if(dat_buf.error == CRC_ERROR)	//crc检验未通过
 			{
-				P62 = 0;
-				Delay1000ms();
-				P62 = 1;
+				error_1 = 0;
 			}
-			if(dat_buf.error == 3)	//本机编号错误
+			else if(dat_buf.error == ADDRESS_ERROR)	//地址错误
 			{
-				P63 = 0;
-				Delay1000ms();
-				P63 = 1;
+				error_4 = 0;
 			}
-			if(dat_buf.error == 4)	//数据长度异常
+			else
 			{
-				P64 = 0;
-				Delay1000ms();
-				P64 = 1;
-			}
-			if(dat_buf.error == 6)	//crc检验未通过
-			{
-				P65 = 0;
-				Delay1000ms();
-				P65 = 1;
+				error_3 = 0;
 			}
 		}
 		UATR1_clear_flag = 1;
@@ -280,14 +284,44 @@ void TheQuery(char addr,int reg,char len)
 	Send1Data(0X17);
 	Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
 									modbus_struct_buf.dat),modbus_struct_buf.len + 10);
-	while(P07 == 0);
+
 	UATR2_rece_flag = 0;
 	modbus_count = 0;
 }
 
+void ASK_ok()
+{
+	Send1Data(0X00);
+	Send1Data(0X01);
+	Send1Data(0X17);
+	Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff10, 12 , 
+									"OK"),12);
+}
 
-
-
+void Init()
+{
+	P2M0 = 0XFF;
+	P2M1 = 0X00;
+	P0M0 = 0XFF;
+	P0M1 = 0X00;
+	P4M0 = 0XFF;
+	P4M1 = 0X00;
+	WDT_CONTR = 0x06;		//看门狗128分频
+	WDT_CONTR |= 0X20;		//启动看门狗
+	Uart1Init();			//115200bps@24.000MHz		通讯协议接收与发送
+	Uart2Init();			//9600bps@24.000MHz		modbus协议收发	
+	Timer2Init();
+	EA = 1;
+	relay_1 = 1;
+	stat_1 = 1;
+	
+	if(WDT_CONTR & 0x80)
+	{
+		error_4 = 0;
+		WDT_CONTR &= ~0x80;
+	}
+	speed(200,0,1);
+}
 
 
 

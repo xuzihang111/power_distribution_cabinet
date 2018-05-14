@@ -18,7 +18,7 @@ typedef struct _TyteMODBUS{
 
 char * MakeModbus(uchar addr, uchar com, int reg_addr, int len);
 TYPE_MODBUS ModbusParsing(uchar *buf);
-
+float calculate(char * buf);		//¸¡µãÐÍ×ª»»
 
 #endif
 
