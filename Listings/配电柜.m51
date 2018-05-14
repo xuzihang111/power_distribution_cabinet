@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        03/18/2018  21:06:13  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/09/2018  09:02:28  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -54,25 +54,26 @@ LINK MAP OF MODULE:  .\Objects\≈‰µÁπÒ (______)
             CODE    0043H     0003H     ABSOLUTE     
             CODE    0046H     0200H     UNIT         ?CO?MODBUS
             CODE    0246H     0200H     UNIT         ?CO?PROTOCOLPARSING
-            CODE    0446H     01D4H     UNIT         ?PR?_UNPACKAGREEMENT?PROTOCOLPARSING
-            CODE    061AH     015EH     UNIT         ?C?LIB_CODE
-            CODE    0778H     00F3H     UNIT         ?PR?DATADARSING?______
-            CODE    086BH     00F3H     UNIT         ?PR?_AGREEMENTPACKAGING?PROTOCOLPARSING
-            CODE    095EH     00E3H     UNIT         ?PR?_MODBUSPARSING?MODBUS
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 2
+            CODE    0446H     01D7H     UNIT         ?PR?_UNPACKAGREEMENT?PROTOCOLPARSING
+            CODE    061DH     015FH     UNIT         ?PR?DATADARSING?______
+            CODE    077CH     015EH     UNIT         ?C?LIB_CODE
+            CODE    08DAH     00F3H     UNIT         ?PR?_AGREEMENTPACKAGING?PROTOCOLPARSING
+            CODE    09CDH     00E3H     UNIT         ?PR?_MODBUSPARSING?MODBUS
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 2
 
 
-            CODE    0A41H     0099H     UNIT         ?PR?MAIN?______
-            CODE    0ADAH     008CH     UNIT         ?C_C51STARTUP
-            CODE    0B66H     0084H     UNIT         ?PR?UART1?______
-            CODE    0BEAH     007EH     UNIT         ?PR?_CRC16?PROTOCOLPARSING
-            CODE    0C68H     005AH     UNIT         ?PR?UART2?______
-            CODE    0CC2H     0057H     UNIT         ?PR?_MODBUSCRC16?MODBUS
-            CODE    0D19H     0045H     UNIT         ?PR?_MAKEMODBUS?MODBUS
-            CODE    0D5EH     0039H     UNIT         ?PR?_SEND1STRING?UART
-            CODE    0D97H     0039H     UNIT         ?PR?_SEND2STRING?UART
-            CODE    0DD0H     000FH     UNIT         ?PR?DELAY1000MS?______
-            CODE    0DDFH     000BH     UNIT         ?PR?_UART2SENDBYTE?UART
+            CODE    0AB0H     00ACH     UNIT         ?PR?MAIN?______
+            CODE    0B5CH     008CH     UNIT         ?C_C51STARTUP
+            CODE    0BE8H     0084H     UNIT         ?PR?UART1?______
+            CODE    0C6CH     0084H     UNIT         ?PR?_THEQUERY?______
+            CODE    0CF0H     007EH     UNIT         ?PR?_CRC16?PROTOCOLPARSING
+            CODE    0D6EH     005AH     UNIT         ?PR?UART2?______
+            CODE    0DC8H     0057H     UNIT         ?PR?_MODBUSCRC16?MODBUS
+            CODE    0E1FH     0045H     UNIT         ?PR?_MAKEMODBUS?MODBUS
+            CODE    0E64H     0039H     UNIT         ?PR?_SEND1STRING?UART
+            CODE    0E9DH     0039H     UNIT         ?PR?_SEND2STRING?UART
+            CODE    0ED6H     000FH     UNIT         ?PR?DELAY1000MS?______
+            CODE    0EE5H     000BH     UNIT         ?PR?_UART2SENDBYTE?UART
 
 
 
@@ -99,12 +100,7 @@ SEGMENT                                           DATA_GROUP          XDATA_GROU
 
 ?PR?DATADARSING?______                          -----    -----      -----    -----
   +--> ?PR?_UNPACKAGREEMENT?PROTOCOLPARSING
-  +--> ?PR?_MAKEMODBUS?MODBUS
-  +--> ?PR?_SEND2STRING?UART
-  +--> ?PR?_MODBUSPARSING?MODBUS
-  +--> ?PR?_SEND1DATA?UART
-  +--> ?PR?_AGREEMENTPACKAGING?PROTOCOLPARSING
-  +--> ?PR?_SEND1STRING?UART
+  +--> ?PR?_THEQUERY?______
   +--> ?PR?DELAY1000MS?______
 
 ?PR?_UNPACKAGREEMENT?PROTOCOLPARSING            0008H    0003H      0231H    013DH
@@ -113,14 +109,22 @@ SEGMENT                                           DATA_GROUP          XDATA_GROU
 ?PR?_CRC16?PROTOCOLPARSING                      0012H    0003H      036EH    0006H
   +--> ?CO?PROTOCOLPARSING
 
+?PR?_THEQUERY?______                            -----    -----      -----    -----
+  +--> ?PR?_MAKEMODBUS?MODBUS
+  +--> ?PR?_SEND2STRING?UART
+  +--> ?PR?_MODBUSPARSING?MODBUS
+  +--> ?PR?_SEND1DATA?UART
+  +--> ?PR?_AGREEMENTPACKAGING?PROTOCOLPARSING
+  +--> ?PR?_SEND1STRING?UART
+
 ?PR?_MAKEMODBUS?MODBUS                          0008H    0008H      0231H    000AH
   +--> ?PR?_MODBUSCRC16?MODBUS
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 3
+
+
 
 ?PR?_MODBUSCRC16?MODBUS                         0012H    0007H      -----    -----
   +--> ?CO?MODBUS
-
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 3
-
 
 ?PR?_SEND2STRING?UART                           0008H    0005H      -----    -----
   +--> ?PR?_UART2SENDBYTE?UART
@@ -143,7 +147,9 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
 
   -------         MODULE        ______
   C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0096H         PUBLIC        P2M0
   D:0080H         PUBLIC        P0
+  D:0095H         PUBLIC        P2M1
   D:0090H         PUBLIC        P1
   D:00A0H         PUBLIC        P2
   D:00B0H         PUBLIC        P3
@@ -153,35 +159,37 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:00E8H         PUBLIC        P6
   D:00F8H         PUBLIC        P7
   D:00A8H         PUBLIC        IE
-  C:0DD0H         PUBLIC        Delay1000ms
+  C:0ED6H         PUBLIC        Delay1000ms
   D:00B8H         PUBLIC        IP
   X:0000H         PUBLIC        modbus_count
   D:0024H         PUBLIC        UATR1_buf_count
   B:0098H.0       PUBLIC        RI
   X:0001H         PUBLIC        UART1_recv_buf
   D:00D8H         PUBLIC        CCON
-  C:0A41H         PUBLIC        main
+  C:0AB0H         PUBLIC        main
   X:012DH         PUBLIC        modbus_buf
   D:0099H         PUBLIC        SBUF
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
   B:00E8H.0       PUBLIC        P60
+  B:00A0H.4       PUBLIC        P24
   X:022CH         PUBLIC        modbus_struct_buf
-  B:00E8H.1       PUBLIC        P61
+  B:00F8H.0       PUBLIC        P70
   B:0080H.7       PUBLIC        P07
   B:00E8H.2       PUBLIC        P62
   B:00E8H.3       PUBLIC        P63
   B:00F8H.3       PUBLIC        P73
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 4
+
+
   B:00E8H.4       PUBLIC        P64
   B:00E8H.5       PUBLIC        P65
+  C:0C6CH         PUBLIC        _TheQuery
   B:00E8H.6       PUBLIC        P66
   B:00E8H.7       PUBLIC        P67
-  C:0778H         PUBLIC        DataDarsing
-  C:0B66H         PUBLIC        Uart1
-  C:0C68H         PUBLIC        Uart2
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 4
-
-
+  C:061DH         PUBLIC        DataDarsing
+  C:0BE8H         PUBLIC        Uart1
+  C:0D6EH         PUBLIC        Uart2
   B:0020H.0       PUBLIC        UATR1_clear_flag
   D:0026H         PUBLIC        dat_buf
   D:009BH         PUBLIC        S2BUF
@@ -190,82 +198,91 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   B:0020H.2       PUBLIC        UATR2_rece_flag
   D:00D0H         PUBLIC        PSW
   -------         PROC          MAIN
-  C:0A41H         LINE#         22
-  C:0A41H         LINE#         23
-  C:0A41H         LINE#         24
-  C:0A44H         LINE#         25
-  C:0A47H         LINE#         26
-  C:0A49H         LINE#         27
-  C:0A49H         LINE#         28
-  C:0A49H         LINE#         29
-  C:0A4CH         LINE#         32
-  C:0A4FH         LINE#         33
-  C:0A4FH         LINE#         34
-  C:0A67H         LINE#         35
-  C:0A69H         LINE#         36
-  C:0A6CH         LINE#         37
-  C:0A6EH         LINE#         38
-  C:0A84H         LINE#         39
-  C:0A89H         LINE#         40
-  C:0A8EH         LINE#         41
-  C:0A93H         LINE#         44
-  C:0AC9H         LINE#         46
-  C:0ACBH         LINE#         47
-  C:0ACEH         LINE#         48
-  C:0AD0H         LINE#         49
-  C:0AD2H         LINE#         50
-  C:0AD7H         LINE#         51
-  C:0AD7H         LINE#         52
+  C:0AB0H         LINE#         24
+  C:0AB0H         LINE#         25
+  C:0AB0H         LINE#         26
+  C:0AB3H         LINE#         27
+  C:0AB6H         LINE#         28
+  C:0AB8H         LINE#         29
+  C:0ABBH         LINE#         30
+  C:0ABEH         LINE#         31
+  C:0ABEH         LINE#         32
+  C:0ABEH         LINE#         33
+  C:0AC1H         LINE#         36
+  C:0AC7H         LINE#         37
+  C:0AC7H         LINE#         38
+  C:0ADFH         LINE#         39
+  C:0AE1H         LINE#         40
+  C:0AE4H         LINE#         41
+  C:0AE6H         LINE#         42
+  C:0AFCH         LINE#         43
+  C:0B01H         LINE#         44
+  C:0B06H         LINE#         45
+  C:0B0BH         LINE#         47
+  C:0B41H         LINE#         49
+  C:0B43H         LINE#         50
+  C:0B46H         LINE#         51
+  C:0B48H         LINE#         52
+  C:0B4AH         LINE#         53
+  C:0B4FH         LINE#         54
+  C:0B4FH         LINE#         55
+  C:0B52H         LINE#         56
+  C:0B52H         LINE#         57
+  C:0B54H         LINE#         58
+  C:0B57H         LINE#         60
+  C:0B57H         LINE#         61
+  C:0B59H         LINE#         62
+  C:0B59H         LINE#         63
   -------         ENDPROC       MAIN
   -------         PROC          UART1
   -------         DO            
   D:0021H         SYMBOL        UART1_rece_len
   -------         ENDDO         
-  C:0B66H         LINE#         56
-  C:0B79H         LINE#         59
-  C:0B7CH         LINE#         60
-  C:0B7CH         LINE#         61
-  C:0B7EH         LINE#         62
-  C:0B86H         LINE#         63
-  C:0B86H         LINE#         64
-  C:0B8CH         LINE#         65
-  C:0B8EH         LINE#         66
-  C:0B8EH         LINE#         68
-  C:0B9DH         LINE#         70
-  C:0BA5H         LINE#         71
-  C:0BA5H         LINE#         72
-  C:0BBDH         LINE#         73
-  C:0BBDH         LINE#         74
-  C:0BCFH         LINE#         75
-  C:0BCFH         LINE#         76
-  C:0BD1H         LINE#         77
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 5
+  C:0BE8H         LINE#         67
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 5
 
 
-  C:0BD1H         LINE#         78
-  C:0BD9H         LINE#         79
-  C:0BD9H         LINE#         80
+  C:0BFBH         LINE#         70
+  C:0BFEH         LINE#         71
+  C:0BFEH         LINE#         72
+  C:0C00H         LINE#         73
+  C:0C08H         LINE#         74
+  C:0C08H         LINE#         75
+  C:0C0EH         LINE#         76
+  C:0C10H         LINE#         77
+  C:0C10H         LINE#         79
+  C:0C1FH         LINE#         81
+  C:0C27H         LINE#         82
+  C:0C27H         LINE#         83
+  C:0C3FH         LINE#         84
+  C:0C3FH         LINE#         85
+  C:0C51H         LINE#         86
+  C:0C51H         LINE#         87
+  C:0C53H         LINE#         88
+  C:0C53H         LINE#         89
+  C:0C5BH         LINE#         90
+  C:0C5BH         LINE#         91
   -------         ENDPROC       UART1
   -------         PROC          UART2
   -------         DO            
   D:0023H         SYMBOL        UART2_recv_len
   -------         ENDDO         
-  C:0C68H         LINE#         82
-  C:0C77H         LINE#         86
-  C:0C7CH         LINE#         87
-  C:0C7CH         LINE#         88
-  C:0C7FH         LINE#         90
-  C:0C90H         LINE#         92
-  C:0C94H         LINE#         93
-  C:0C94H         LINE#         94
-  C:0C9AH         LINE#         95
-  C:0C9AH         LINE#         97
-  C:0CADH         LINE#         98
-  C:0CADH         LINE#         99
-  C:0CAFH         LINE#         100
-  C:0CAFH         LINE#         102
-  C:0CB5H         LINE#         103
-  C:0CB5H         LINE#         104
+  C:0D6EH         LINE#         93
+  C:0D7DH         LINE#         97
+  C:0D82H         LINE#         98
+  C:0D82H         LINE#         99
+  C:0D85H         LINE#         101
+  C:0D96H         LINE#         103
+  C:0D9AH         LINE#         104
+  C:0D9AH         LINE#         105
+  C:0DA0H         LINE#         106
+  C:0DA0H         LINE#         108
+  C:0DB3H         LINE#         109
+  C:0DB3H         LINE#         110
+  C:0DB5H         LINE#         111
+  C:0DB5H         LINE#         113
+  C:0DBBH         LINE#         114
+  C:0DBBH         LINE#         115
   -------         ENDPROC       UART2
   -------         PROC          DELAY1000MS
   -------         DO            
@@ -273,82 +290,145 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:0006H         SYMBOL        j
   D:0005H         SYMBOL        k
   -------         ENDDO         
-  C:0DD0H         LINE#         107
-  C:0DD0H         LINE#         108
-  C:0DD0H         LINE#         111
-  C:0DD1H         LINE#         112
-  C:0DD2H         LINE#         113
-  C:0DD4H         LINE#         114
-  C:0DD6H         LINE#         115
-  C:0DD8H         LINE#         117
-  C:0DD8H         LINE#         119
-  C:0DD8H         LINE#         120
-  C:0DDAH         LINE#         121
-  C:0DDCH         LINE#         122
-  C:0DDEH         LINE#         123
+  C:0ED6H         LINE#         118
+  C:0ED6H         LINE#         119
+  C:0ED6H         LINE#         122
+  C:0ED7H         LINE#         123
+  C:0ED8H         LINE#         124
+  C:0EDAH         LINE#         125
+  C:0EDCH         LINE#         126
+  C:0EDEH         LINE#         128
+  C:0EDEH         LINE#         130
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 6
+
+
+  C:0EDEH         LINE#         131
+  C:0EE0H         LINE#         132
+  C:0EE2H         LINE#         133
+  C:0EE4H         LINE#         134
   -------         ENDPROC       DELAY1000MS
   -------         PROC          DATADARSING
-  C:0778H         LINE#         125
-  C:0778H         LINE#         126
-  C:0778H         LINE#         127
-  C:077EH         LINE#         128
-  C:077EH         LINE#         129
-  C:0794H         LINE#         131
-  C:079CH         LINE#         132
-  C:079CH         LINE#         133
-  C:079EH         LINE#         134
-  C:07ACH         LINE#         135
-  C:07ACH         LINE#         136
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 6
+  C:061DH         LINE#         136
+  C:061DH         LINE#         137
+  C:061DH         LINE#         138
+  C:0623H         LINE#         139
+  C:0623H         LINE#         140
+  C:0639H         LINE#         144
+  C:0641H         LINE#         145
+  C:0641H         LINE#         146
+  C:0643H         LINE#         147
+  C:064BH         LINE#         148
+  C:064BH         LINE#         149
+  C:064FH         LINE#         150
+  C:0651H         LINE#         151
+  C:065BH         LINE#         152
+  C:065BH         LINE#         153
+  C:065FH         LINE#         154
+  C:0661H         LINE#         155
+  C:066BH         LINE#         156
+  C:066BH         LINE#         157
+  C:066FH         LINE#         158
+  C:0671H         LINE#         159
+  C:067BH         LINE#         160
+  C:067BH         LINE#         161
+  C:067FH         LINE#         162
+  C:0681H         LINE#         163
+  C:068BH         LINE#         164
+  C:068BH         LINE#         165
+  C:068FH         LINE#         166
+  C:0691H         LINE#         167
+  C:069BH         LINE#         168
+  C:069BH         LINE#         169
+  C:069FH         LINE#         170
+  C:06A1H         LINE#         171
+  C:06ABH         LINE#         172
+  C:06ABH         LINE#         173
+  C:06B3H         LINE#         174
+  C:06B6H         LINE#         207
+  C:06C0H         LINE#         208
+  C:06C0H         LINE#         209
+  C:06C8H         LINE#         210
+  C:06CAH         LINE#         211
+  C:06D4H         LINE#         212
+  C:06D4H         LINE#         213
+  C:06DCH         LINE#         214
+  C:06DEH         LINE#         215
+  C:06E8H         LINE#         216
+  C:06E8H         LINE#         217
+  C:06F0H         LINE#         218
+  C:06F2H         LINE#         219
+  C:06FCH         LINE#         220
+  C:06FCH         LINE#         221
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 7
 
 
-  C:07AEH         LINE#         137
-  C:07C4H         LINE#         138
-  C:07C6H         LINE#         139
-  C:07C9H         LINE#         140
-  C:07CBH         LINE#         141
-  C:07E1H         LINE#         142
-  C:07E6H         LINE#         143
-  C:07EBH         LINE#         144
-  C:07F0H         LINE#         145
-  C:0826H         LINE#         147
-  C:0829H         LINE#         148
-  C:082BH         LINE#         149
-  C:0830H         LINE#         150
-  C:0832H         LINE#         151
-  C:0832H         LINE#         152
-  C:0834H         LINE#         157
-  C:0834H         LINE#         158
-  C:0836H         LINE#         159
-  C:083BH         LINE#         160
-  C:083BH         LINE#         161
-  C:083DH         LINE#         162
-  C:0840H         LINE#         163
-  C:0842H         LINE#         164
-  C:0842H         LINE#         165
-  C:0847H         LINE#         166
-  C:0847H         LINE#         167
-  C:0849H         LINE#         168
-  C:084CH         LINE#         169
-  C:084EH         LINE#         170
-  C:084EH         LINE#         171
-  C:0853H         LINE#         172
-  C:0853H         LINE#         173
-  C:0855H         LINE#         174
-  C:0858H         LINE#         175
-  C:085AH         LINE#         176
-  C:085AH         LINE#         177
-  C:085FH         LINE#         178
-  C:085FH         LINE#         179
-  C:0861H         LINE#         180
-  C:0864H         LINE#         181
-  C:0866H         LINE#         182
-  C:0866H         LINE#         183
-  C:0866H         LINE#         184
-  C:0868H         LINE#         185
-  C:086AH         LINE#         186
-  C:086AH         LINE#         187
+  C:0704H         LINE#         222
+  C:0706H         LINE#         223
+  C:0710H         LINE#         224
+  C:0710H         LINE#         225
+  C:0718H         LINE#         226
+  C:071AH         LINE#         227
+  C:0724H         LINE#         228
+  C:0724H         LINE#         229
+  C:072CH         LINE#         230
+  C:072EH         LINE#         231
+  C:0739H         LINE#         232
+  C:0739H         LINE#         233
+  C:0743H         LINE#         234
+  C:0743H         LINE#         235
+  C:0745H         LINE#         240
+  C:0745H         LINE#         241
+  C:0747H         LINE#         242
+  C:074CH         LINE#         243
+  C:074CH         LINE#         244
+  C:074EH         LINE#         245
+  C:0751H         LINE#         246
+  C:0753H         LINE#         247
+  C:0753H         LINE#         248
+  C:0758H         LINE#         249
+  C:0758H         LINE#         250
+  C:075AH         LINE#         251
+  C:075DH         LINE#         252
+  C:075FH         LINE#         253
+  C:075FH         LINE#         254
+  C:0764H         LINE#         255
+  C:0764H         LINE#         256
+  C:0766H         LINE#         257
+  C:0769H         LINE#         258
+  C:076BH         LINE#         259
+  C:076BH         LINE#         260
+  C:0770H         LINE#         261
+  C:0770H         LINE#         262
+  C:0772H         LINE#         263
+  C:0775H         LINE#         264
+  C:0777H         LINE#         265
+  C:0777H         LINE#         266
+  C:0777H         LINE#         267
+  C:0779H         LINE#         268
+  C:077BH         LINE#         269
+  C:077BH         LINE#         270
   -------         ENDPROC       DATADARSING
+  -------         PROC          _THEQUERY
+  D:0007H         SYMBOL        addr
+  D:0002H         SYMBOL        reg
+  D:0006H         SYMBOL        len
+  C:0C6CH         LINE#         273
+  C:0C72H         LINE#         274
+  C:0C72H         LINE#         275
+  C:0C87H         LINE#         276
+  C:0C8AH         LINE#         277
+  C:0CA0H         LINE#         278
+  C:0CA5H         LINE#         279
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 8
+
+
+  C:0CAAH         LINE#         280
+  C:0CAFH         LINE#         281
+  C:0CE5H         LINE#         283
+  C:0CE8H         LINE#         284
+  C:0CEAH         LINE#         285
+  C:0CEFH         LINE#         286
+  -------         ENDPROC       _THEQUERY
   -------         ENDMOD        ______
 
   -------         MODULE        MODBUS
@@ -359,9 +439,6 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:00B0H         PUBLIC        P3
   D:00C0H         PUBLIC        P4
   D:00C8H         PUBLIC        P5
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 7
-
-
   D:00E8H         PUBLIC        P6
   D:00F8H         PUBLIC        P7
   D:00A8H         PUBLIC        IE
@@ -372,9 +449,9 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
   B:00E8H.2       PUBLIC        P62
-  C:095EH         PUBLIC        _ModbusParsing
-  C:0CC2H         PUBLIC        _modbusCRC16
-  C:0D19H         PUBLIC        _MakeModbus
+  C:09CDH         PUBLIC        _ModbusParsing
+  C:0DC8H         PUBLIC        _modbusCRC16
+  C:0E1FH         PUBLIC        _MakeModbus
   D:00D0H         PUBLIC        PSW
   -------         PROC          _MODBUSCRC16
   D:0012H         SYMBOL        updata
@@ -385,23 +462,26 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:0006H         SYMBOL        uchCRCLo
   D:0004H         SYMBOL        uindex
   -------         ENDDO         
-  C:0CC2H         LINE#         49
-  C:0CCCH         LINE#         50
-  C:0CCCH         LINE#         52
-  C:0CCEH         LINE#         53
-  C:0CD0H         LINE#         55
-  C:0CDDH         LINE#         56
-  C:0CDDH         LINE#         57
-  C:0CF2H         LINE#         58
-  C:0CFFH         LINE#         59
-  C:0D0CH         LINE#         60
-  C:0D0EH         LINE#         62
-  C:0D10H         LINE#         63
-  C:0D12H         LINE#         64
-  C:0D18H         LINE#         65
+  C:0DC8H         LINE#         49
+  C:0DD2H         LINE#         50
+  C:0DD2H         LINE#         52
+  C:0DD4H         LINE#         53
+  C:0DD6H         LINE#         55
+  C:0DE3H         LINE#         56
+  C:0DE3H         LINE#         57
+  C:0DF8H         LINE#         58
+  C:0E05H         LINE#         59
+  C:0E12H         LINE#         60
+  C:0E14H         LINE#         62
+  C:0E16H         LINE#         63
+  C:0E18H         LINE#         64
+  C:0E1EH         LINE#         65
   -------         ENDPROC       _MODBUSCRC16
   -------         PROC          _MAKEMODBUS
   D:0007H         SYMBOL        addr
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 9
+
+
   D:0005H         SYMBOL        com
   D:0002H         SYMBOL        reg_addr
   D:000CH         SYMBOL        len
@@ -409,22 +489,19 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   X:0231H         SYMBOL        return_buf
   D:000EH         SYMBOL        crc
   -------         ENDDO         
-  C:0D19H         LINE#         67
-  C:0D19H         LINE#         68
-  C:0D19H         LINE#         72
-  C:0D1EH         LINE#         73
-  C:0D21H         LINE#         74
-  C:0D26H         LINE#         75
-  C:0D29H         LINE#         76
-  C:0D2FH         LINE#         77
-  C:0D33H         LINE#         79
-  C:0D4DH         LINE#         82
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 8
-
-
-  C:0D53H         LINE#         83
-  C:0D57H         LINE#         85
-  C:0D5DH         LINE#         86
+  C:0E1FH         LINE#         67
+  C:0E1FH         LINE#         68
+  C:0E1FH         LINE#         72
+  C:0E24H         LINE#         73
+  C:0E27H         LINE#         74
+  C:0E2CH         LINE#         75
+  C:0E2FH         LINE#         76
+  C:0E35H         LINE#         77
+  C:0E39H         LINE#         79
+  C:0E53H         LINE#         82
+  C:0E59H         LINE#         83
+  C:0E5DH         LINE#         85
+  C:0E63H         LINE#         86
   -------         ENDPROC       _MAKEMODBUS
   -------         PROC          _MODBUSPARSING
   D:0008H         SYMBOL        buf
@@ -434,33 +511,36 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:000BH         SYMBOL        modbus
   D:0010H         SYMBOL        crc
   -------         ENDDO         
-  C:095EH         LINE#         88
-  C:0964H         LINE#         89
-  C:0964H         LINE#         93
-  C:0967H         LINE#         98
-  C:096FH         LINE#         100
-  C:097AH         LINE#         101
-  C:098DH         LINE#         103
-  C:099BH         LINE#         104
-  C:099BH         LINE#         105
-  C:09B8H         LINE#         106
-  C:09BFH         LINE#         107
-  C:09C8H         LINE#         109
-  C:09E6H         LINE#         111
-  C:09F4H         LINE#         112
-  C:0A09H         LINE#         114
-  C:0A2FH         LINE#         115
-  C:0A2FH         LINE#         116
-  C:0A31H         LINE#         117
-  C:0A34H         LINE#         118
-  C:0A37H         LINE#         119
-  C:0A37H         LINE#         121
-  C:0A37H         LINE#         122
-  C:0A3AH         LINE#         123
-  C:0A40H         LINE#         124
-  C:0A40H         LINE#         125
+  C:09CDH         LINE#         88
+  C:09D3H         LINE#         89
+  C:09D3H         LINE#         93
+  C:09D6H         LINE#         98
+  C:09DEH         LINE#         100
+  C:09E9H         LINE#         101
+  C:09FCH         LINE#         103
+  C:0A0AH         LINE#         104
+  C:0A0AH         LINE#         105
+  C:0A27H         LINE#         106
+  C:0A2EH         LINE#         107
+  C:0A37H         LINE#         109
+  C:0A55H         LINE#         111
+  C:0A63H         LINE#         112
+  C:0A78H         LINE#         114
+  C:0A9EH         LINE#         115
+  C:0A9EH         LINE#         116
+  C:0AA0H         LINE#         117
+  C:0AA3H         LINE#         118
+  C:0AA6H         LINE#         119
+  C:0AA6H         LINE#         121
+  C:0AA6H         LINE#         122
+  C:0AA9H         LINE#         123
+  C:0AAFH         LINE#         124
+  C:0AAFH         LINE#         125
   -------         ENDPROC       _MODBUSPARSING
   -------         ENDMOD        MODBUS
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 10
+
 
   -------         MODULE        PROTOCOLPARSING
   C:0000H         SYMBOL        _ICE_DUMMY_
@@ -478,13 +558,10 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:00A8H         PUBLIC        IE
   D:00B8H         PUBLIC        IP
   D:00D8H         PUBLIC        CCON
-  C:086BH         PUBLIC        _AgreementPackaging
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 9
-
-
+  C:08DAH         PUBLIC        _AgreementPackaging
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
-  C:0BEAH         PUBLIC        _CRC16
+  C:0CF0H         PUBLIC        _CRC16
   D:00D0H         PUBLIC        PSW
   -------         PROC          _CRC16
   D:0012H         SYMBOL        updata
@@ -495,20 +572,20 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   X:0371H         SYMBOL        uchCRCLo
   X:0372H         SYMBOL        uindex
   -------         ENDDO         
-  C:0BEAH         LINE#         64
-  C:0BF0H         LINE#         65
-  C:0BF0H         LINE#         67
-  C:0BF6H         LINE#         68
-  C:0BF8H         LINE#         70
-  C:0C02H         LINE#         71
-  C:0C02H         LINE#         72
-  C:0C22H         LINE#         73
-  C:0C3FH         LINE#         74
-  C:0C4FH         LINE#         75
-  C:0C51H         LINE#         77
-  C:0C59H         LINE#         78
-  C:0C61H         LINE#         79
-  C:0C67H         LINE#         80
+  C:0CF0H         LINE#         64
+  C:0CF6H         LINE#         65
+  C:0CF6H         LINE#         67
+  C:0CFCH         LINE#         68
+  C:0CFEH         LINE#         70
+  C:0D08H         LINE#         71
+  C:0D08H         LINE#         72
+  C:0D28H         LINE#         73
+  C:0D45H         LINE#         74
+  C:0D55H         LINE#         75
+  C:0D57H         LINE#         77
+  C:0D5FH         LINE#         78
+  C:0D67H         LINE#         79
+  C:0D6DH         LINE#         80
   -------         ENDPROC       _CRC16
   -------         PROC          _AGREEMENTPACKAGING
   D:0008H         SYMBOL        addr
@@ -521,31 +598,31 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   X:0231H         SYMBOL        buf_count
   X:0233H         SYMBOL        crc
   -------         ENDDO         
-  C:086BH         LINE#         103
-  C:086FH         LINE#         104
-  C:086FH         LINE#         106
-  C:0876H         LINE#         111
-  C:087CH         LINE#         112
-  C:0880H         LINE#         113
-  C:0883H         LINE#         114
-  C:0886H         LINE#         115
-  C:0889H         LINE#         116
-  C:088CH         LINE#         117
-  C:0890H         LINE#         118
-  C:0894H         LINE#         120
-  C:08AAH         LINE#         121
-  C:08C8H         LINE#         123
-  C:08E7H         LINE#         124
-  C:08E7H         LINE#         125
-  C:0901H         LINE#         127
-  C:0911H         LINE#         130
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 10
+  C:08DAH         LINE#         103
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 11
 
 
-  C:0931H         LINE#         132
-  C:0944H         LINE#         133
-  C:0957H         LINE#         135
-  C:095DH         LINE#         136
+  C:08DEH         LINE#         104
+  C:08DEH         LINE#         106
+  C:08E5H         LINE#         111
+  C:08EBH         LINE#         112
+  C:08EFH         LINE#         113
+  C:08F2H         LINE#         114
+  C:08F5H         LINE#         115
+  C:08F8H         LINE#         116
+  C:08FBH         LINE#         117
+  C:08FFH         LINE#         118
+  C:0903H         LINE#         120
+  C:0919H         LINE#         121
+  C:0937H         LINE#         123
+  C:0956H         LINE#         124
+  C:0956H         LINE#         125
+  C:0970H         LINE#         127
+  C:0980H         LINE#         130
+  C:09A0H         LINE#         132
+  C:09B3H         LINE#         133
+  C:09C6H         LINE#         135
+  C:09CCH         LINE#         136
   -------         ENDPROC       _AGREEMENTPACKAGING
   -------         PROC          _UNPACKAGREEMENT
   D:0008H         SYMBOL        buf
@@ -577,37 +654,37 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   C:058FH         LINE#         183
   C:058FH         LINE#         184
   C:0595H         LINE#         185
-  C:0598H         LINE#         186
-  C:0598H         LINE#         187
-  C:05A5H         LINE#         188
-  C:05A5H         LINE#         189
-  C:05ABH         LINE#         190
-  C:05AFH         LINE#         191
-  C:05AFH         LINE#         192
-  C:05B5H         LINE#         193
-  C:05B5H         LINE#         194
-  C:05BBH         LINE#         195
-  C:05BFH         LINE#         196
-  C:05BFH         LINE#         197
-  C:05E1H         LINE#         198
-  C:05E1H         LINE#         199
-  C:05E7H         LINE#         200
-  C:05EBH         LINE#         201
-  C:05EBH         LINE#         203
-  C:05EBH         LINE#         204
-  C:0603H         LINE#         205
-  C:0603H         LINE#         206
-  C:0609H         LINE#         207
-  C:060DH         LINE#         208
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 11
+  C:0599H         LINE#         186
+  C:0599H         LINE#         187
+  C:05A6H         LINE#         188
+  C:05A6H         LINE#         189
+  C:05ACH         LINE#         190
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 12
 
 
-  C:060DH         LINE#         210
-  C:060DH         LINE#         211
-  C:0613H         LINE#         212
-  C:0619H         LINE#         213
-  C:0619H         LINE#         214
-  C:0619H         LINE#         215
+  C:05B0H         LINE#         191
+  C:05B0H         LINE#         192
+  C:05B8H         LINE#         193
+  C:05B8H         LINE#         194
+  C:05BEH         LINE#         195
+  C:05C2H         LINE#         196
+  C:05C2H         LINE#         197
+  C:05E4H         LINE#         198
+  C:05E4H         LINE#         199
+  C:05EAH         LINE#         200
+  C:05EEH         LINE#         201
+  C:05EEH         LINE#         203
+  C:05EEH         LINE#         204
+  C:0606H         LINE#         205
+  C:0606H         LINE#         206
+  C:060CH         LINE#         207
+  C:0610H         LINE#         208
+  C:0610H         LINE#         210
+  C:0610H         LINE#         211
+  C:0616H         LINE#         212
+  C:061CH         LINE#         213
+  C:061CH         LINE#         214
+  C:061CH         LINE#         215
   -------         ENDPROC       _UNPACKAGREEMENT
   -------         ENDMOD        PROTOCOLPARSING
 
@@ -630,8 +707,8 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:0098H         PUBLIC        SCON
   D:0089H         PUBLIC        TMOD
   D:0088H         PUBLIC        TCON
-  C:0D5EH         PUBLIC        _Send1String
-  C:0D97H         PUBLIC        _Send2String
+  C:0E64H         PUBLIC        _Send1String
+  C:0E9DH         PUBLIC        _Send2String
   C:0039H         PUBLIC        _Send1Data
   D:00AFH         PUBLIC        IE2
   D:008EH         PUBLIC        AUXR
@@ -642,10 +719,13 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   D:00D7H         PUBLIC        T2L
   B:0088H.6       PUBLIC        TR1
   D:009BH         PUBLIC        S2BUF
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 13
+
+
   C:0003H         PUBLIC        Uart1Init
   D:009AH         PUBLIC        S2CON
   C:0026H         PUBLIC        Uart2Init
-  C:0DDFH         PUBLIC        _Uart2SendByte
+  C:0EE5H         PUBLIC        _Uart2SendByte
   D:00D0H         PUBLIC        PSW
   -------         PROC          UART1INIT
   C:0003H         LINE#         5
@@ -659,9 +739,6 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   C:0015H         LINE#         13
   C:0017H         LINE#         14
   C:0019H         LINE#         15
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 12
-
-
   C:001BH         LINE#         16
   -------         ENDPROC       UART1INIT
   -------         PROC          UART2INIT
@@ -690,22 +767,25 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   -------         DO            
   D:0004H         SYMBOL        i
   -------         ENDDO         
-  C:0D5EH         LINE#         35
-  C:0D68H         LINE#         36
-  C:0D68H         LINE#         38
-  C:0D7AH         LINE#         39
-  C:0D7AH         LINE#         40
-  C:0D8FH         LINE#         41
-  C:0D96H         LINE#         42
+  C:0E64H         LINE#         35
+  C:0E6EH         LINE#         36
+  C:0E6EH         LINE#         38
+  C:0E80H         LINE#         39
+  C:0E80H         LINE#         40
+  C:0E95H         LINE#         41
+  C:0E9CH         LINE#         42
   -------         ENDPROC       _SEND1STRING
   -------         PROC          _UART2SENDBYTE
   D:0007H         SYMBOL        buf
-  C:0DDFH         LINE#         44
-  C:0DDFH         LINE#         45
-  C:0DDFH         LINE#         46
-  C:0DE1H         LINE#         47
-  C:0DE6H         LINE#         48
-  C:0DE9H         LINE#         50
+  C:0EE5H         LINE#         44
+  C:0EE5H         LINE#         45
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/09/2018  09:02:28  PAGE 14
+
+
+  C:0EE5H         LINE#         46
+  C:0EE7H         LINE#         47
+  C:0EECH         LINE#         48
+  C:0EEFH         LINE#         50
   -------         ENDPROC       _UART2SENDBYTE
   -------         PROC          _SEND2STRING
   D:0008H         SYMBOL        s
@@ -713,34 +793,31 @@ SYMBOL TABLE OF MODULE:  .\Objects\≈‰µÁπÒ (______)
   -------         DO            
   D:0004H         SYMBOL        i
   -------         ENDDO         
-  C:0D97H         LINE#         52
-  C:0DA1H         LINE#         53
-  C:0DA1H         LINE#         55
-  C:0DB3H         LINE#         56
-  C:0DB3H         LINE#         57
-  C:0DC8H         LINE#         58
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/18/2018  21:06:13  PAGE 13
-
-
-  C:0DCFH         LINE#         59
+  C:0E9DH         LINE#         52
+  C:0EA7H         LINE#         53
+  C:0EA7H         LINE#         55
+  C:0EB9H         LINE#         56
+  C:0EB9H         LINE#         57
+  C:0ECEH         LINE#         58
+  C:0ED5H         LINE#         59
   -------         ENDPROC       _SEND2STRING
   -------         ENDMOD        UART
 
   -------         MODULE        ?C?COPY
-  C:06EAH         PUBLIC        ?C?COPY
+  C:084CH         PUBLIC        ?C?COPY
   -------         ENDMOD        ?C?COPY
 
   -------         MODULE        ?C?CLDPTR
-  C:0710H         PUBLIC        ?C?CLDPTR
+  C:0872H         PUBLIC        ?C?CLDPTR
   -------         ENDMOD        ?C?CLDPTR
 
   -------         MODULE        ?C?CLDOPTR
-  C:0729H         PUBLIC        ?C?CLDOPTR
+  C:088BH         PUBLIC        ?C?CLDOPTR
   -------         ENDMOD        ?C?CLDOPTR
 
   -------         MODULE        ?C?CSTOPTR
-  C:0756H         PUBLIC        ?C?CSTOPTR
+  C:08B8H         PUBLIC        ?C?CSTOPTR
   -------         ENDMOD        ?C?CSTOPTR
 
-Program Size: data=42.3 xdata=1334 code=3560
+Program Size: data=42.3 xdata=1334 code=3822
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

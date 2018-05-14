@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   ______                                                            03/18/2018 21:06:13 PAGE 1   
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE ______
@@ -28,208 +28,308 @@ line level    source
   18          
   19          void Delay1000ms();
   20          void DataDarsing(void);
-  21          
-  22          void main()
-  23          {
-  24   1              Uart1Init();                    //9600bps@24.000MHz
-  25   1              Uart2Init();            //9600bps@24.000MHz
-  26   1              EA = 1;
-  27   1              while(1)
-  28   1              {
-  29   2                      DataDarsing();
-  30   2                      
-  31   2                      
-  32   2                      if(!P73)
-  33   2                      {       
-  34   3                              Send2String(MakeModbus(0x01,0x03,0x0017,50),8);
-  35   3                              P66 = 0;
-  36   3                              while(!UATR2_rece_flag);
-  37   3                              P66 = 1;
-  38   3                              modbus_struct_buf = ModbusParsing(modbus_buf);
-  39   3                              Send1Data(0X00);
-  40   3                              Send1Data(0X01);
-  41   3                              Send1Data(0X17);
-  42   3      //                      Send1String(aaa,110);
-  43   3      
-  44   3                              Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat
+  21          void TheQuery(char addr,int reg,char len);
+  22          
+  23          
+  24          void main()
+  25          {
+  26   1              Uart1Init();                    //115200bps@24.000MHz           通讯协议接收与发送
+  27   1              Uart2Init();                    //9600bps@24.000MHz             modbus协议收发  
+  28   1              EA = 1;
+  29   1              P2M0 = 0XFF;
+  30   1              P2M1 = 0X00;
+  31   1              while(1)
+  32   1              {
+  33   2                      DataDarsing();
+  34   2                      
+  35   2                      
+  36   2                      if(!P73)//测试
+  37   2                      {       
+  38   3                              Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//度ABC三项电压有效值
+  39   3                              P66 = 0;
+  40   3                              while(!UATR2_rece_flag);        //等待数据返回
+  41   3                              P66 = 1;
+  42   3                              modbus_struct_buf = ModbusParsing(modbus_buf);
+  43   3                              Send1Data(0X00);
+  44   3                              Send1Data(0X01);
+  45   3                              Send1Data(0X17);
+  46   3      
+  47   3                              Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat
              -),modbus_struct_buf.len + 10);
-  45   3                              
-  46   3                              P67 = 0;
-  47   3                              while(!P73);
-  48   3                              P67 = 1;
-  49   3                              UATR2_rece_flag = 0;
-  50   3                              modbus_count = 0;
-  51   3                      }
-  52   2              }
-  53   1      }
-C51 COMPILER V9.56.0.0   ______                                                            03/18/2018 21:06:13 PAGE 2   
+  48   3                              
+  49   3                              P67 = 0;
+  50   3                              while(!P73);
+  51   3                              P67 = 1;
+  52   3                              UATR2_rece_flag = 0;
+  53   3                              modbus_count = 0;
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 2   
 
-  54          
-  55          
-  56          void Uart1() interrupt 4                                                //串口1接收中断
-  57          {
-  58   1              static uint UART1_rece_len;                                     //声明静态变量，用于存储应接收到的字节数
-  59   1              if (RI)
-  60   1              {
-  61   2                      RI = 0;                                                         //清除S2RI位
-  62   2                      if(SBUF == 0X7E && UATR1_clear_flag)    //判断到帧头，数据处理完后UATR1_clear_flag要置1
-  63   2                      { 
-  64   3                              UATR1_buf_count = 0;                            //清除计数标志
-  65   3                              UATR1_clear_flag = 0;                           //清除计数标志清空标志
-  66   3                      }
-  67   2                      
-  68   2                      UART1_recv_buf[UATR1_buf_count] = SBUF; //将接收到的字符存储
-  69   2                      
-  70   2                      if(UATR1_buf_count == 7)                                //接收到了包长度数据
-  71   2                      {
-  72   3                              UART1_rece_len = UART1_recv_buf[6] << 8 | UART1_recv_buf[7];    //合成包长度数据
-  73   3                      }
-  74   2                      if(UATR1_buf_count == UART1_rece_len - 1)//本包数据接收完毕
-  75   2                      {
-  76   3                              UATR1_rece_flag = 1;                            //对UART1_recv_buf处理完成后要将其清零
+  54   3                      }
+  55   2                      if(!P70)
+  56   2                      {
+  57   3                              P24 = 0;
+  58   3                      }
+  59   2                      else
+  60   2                      {
+  61   3                              P24 = 1;
+  62   3                      }
+  63   2              }
+  64   1      }
+  65          
+  66          
+  67          void Uart1() interrupt 4                                                //串口1接收中断
+  68          {
+  69   1              static uint UART1_rece_len;                                     //声明静态变量，用于存储应接收到的字节数
+  70   1              if (RI)
+  71   1              {
+  72   2                      RI = 0;                                                         //清除S2RI位
+  73   2                      if(SBUF == 0X7E && UATR1_clear_flag)    //判断到帧头，数据处理完后UATR1_clear_flag要置1
+  74   2                      { 
+  75   3                              UATR1_buf_count = 0;                            //清除计数标志
+  76   3                              UATR1_clear_flag = 0;                           //清除计数标志清空标志
   77   3                      }
-  78   2                      UATR1_buf_count++;                      
-  79   2              }
-  80   1      }
-  81          
-  82          void Uart2() interrupt 8
-  83          {
-  84   1              static uchar UART2_recv_len;                            //声明静态变量，用于存储应接收到的字节数
-  85   1              
-  86   1              if (S2CON & 0x01)
-  87   1              {
-  88   2                      S2CON &= ~0x01;                                         //清除S2RI位
-  89   2                      
-  90   2                      modbus_buf[modbus_count] = S2BUF; 
-  91   2                      
-  92   2                      if(modbus_count == 2)
-  93   2                      {
-  94   3                              UART2_recv_len = modbus_buf[2];
-  95   3                      }
-  96   2                      
-  97   2                      if(modbus_count == UART2_recv_len + 4)
-  98   2                      {
-  99   3                              UATR2_rece_flag = 1;
- 100   3                      }
- 101   2                      
- 102   2                      modbus_count++;
- 103   2              }
- 104   1      }
- 105          
- 106          
- 107          void Delay1000ms()              //@24.000MHz
- 108          {
- 109   1              unsigned char i, j, k;
- 110   1      
- 111   1              _nop_();
- 112   1              _nop_();
- 113   1              i = 92;
- 114   1              j = 50;
- 115   1              k = 238;
-C51 COMPILER V9.56.0.0   ______                                                            03/18/2018 21:06:13 PAGE 3   
+  78   2                      
+  79   2                      UART1_recv_buf[UATR1_buf_count] = SBUF; //将接收到的字符存储
+  80   2                      
+  81   2                      if(UATR1_buf_count == 7)                                //接收到了包长度数据
+  82   2                      {
+  83   3                              UART1_rece_len = UART1_recv_buf[6] << 8 | UART1_recv_buf[7];    //合成包长度数据
+  84   3                      }
+  85   2                      if(UATR1_buf_count == UART1_rece_len - 1)//本包数据接收完毕
+  86   2                      {
+  87   3                              UATR1_rece_flag = 1;                            //对UART1_recv_buf处理完成后要将其清零
+  88   3                      }
+  89   2                      UATR1_buf_count++;                      
+  90   2              }
+  91   1      }
+  92          
+  93          void Uart2() interrupt 8
+  94          {
+  95   1              static uchar UART2_recv_len;                            //声明静态变量，用于存储应接收到的字节数
+  96   1              
+  97   1              if (S2CON & 0x01)
+  98   1              {
+  99   2                      S2CON &= ~0x01;                                         //清除S2RI位
+ 100   2                      
+ 101   2                      modbus_buf[modbus_count] = S2BUF; 
+ 102   2                      
+ 103   2                      if(modbus_count == 2)
+ 104   2                      {
+ 105   3                              UART2_recv_len = modbus_buf[2];
+ 106   3                      }
+ 107   2                      
+ 108   2                      if(modbus_count == UART2_recv_len + 4)
+ 109   2                      {
+ 110   3                              UATR2_rece_flag = 1;
+ 111   3                      }
+ 112   2                      
+ 113   2                      modbus_count++;
+ 114   2              }
+ 115   1      }
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 3   
 
- 116   1              do
- 117   1              {
- 118   2                      do
- 119   2                      {
- 120   3                              while (--k);
- 121   3                      } while (--j);
- 122   2              } while (--i);
- 123   1      }
- 124          
- 125          void DataDarsing(void)
- 126          {
- 127   1              if(UATR1_rece_flag)
+ 116          
+ 117          
+ 118          void Delay1000ms()              //@24.000MHz
+ 119          {
+ 120   1              unsigned char i, j, k;
+ 121   1      
+ 122   1              _nop_();
+ 123   1              _nop_();
+ 124   1              i = 92;
+ 125   1              j = 50;
+ 126   1              k = 238;
+ 127   1              do
  128   1              {
- 129   2                      dat_buf = UnpackAgreement(UART1_recv_buf);      //解析数据包，将解析结果存到dat_buf中
- 130   2                      
- 131   2                      if(dat_buf.error == -1)
- 132   2                      {
- 133   3                              P60 = !P60;
- 134   3                              if(dat_buf.com == 0xff20)       //判断是否为查询指令
- 135   3                              {
- 136   4                                      P61 = !P61;
- 137   4                                      Send2String(MakeModbus(0x01,0x03,0x0017,25),8);
- 138   4                                      P66 = 0;
- 139   4                                      while(!UATR2_rece_flag);
- 140   4                                      P66 = 1;
- 141   4                                      modbus_struct_buf = ModbusParsing(modbus_buf);
- 142   4                                      Send1Data(0X00);
- 143   4                                      Send1Data(0X01);
- 144   4                                      Send1Data(0X17);
- 145   4                                      Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
- 146   4                                                                                                      modbus_struct_buf.dat),modbus_struct_buf.len + 10);
- 147   4                                      while(P07 == 0);
- 148   4                                      UATR2_rece_flag = 0;
- 149   4                                      modbus_count = 0;
- 150   4                                      P63 = !P63;
- 151   4                              }
- 152   3                      }
- 153   2                      /*
- 154   2                      *以下代码包含数据接收异常时的处理
- 155   2                      */
- 156   2                      else                                                    //如果接收到的数据包有误
- 157   2                      {
- 158   3                              P67 = !P67;;
- 159   3                              if(dat_buf.error == 2)          //本机地址错误，进行相应的处理，可忽略，下同
+ 129   2                      do
+ 130   2                      {
+ 131   3                              while (--k);
+ 132   3                      } while (--j);
+ 133   2              } while (--i);
+ 134   1      }
+ 135          
+ 136          void DataDarsing(void)
+ 137          {
+ 138   1              if(UATR1_rece_flag)
+ 139   1              {
+ 140   2                      dat_buf = UnpackAgreement(UART1_recv_buf);      //解析数据包，将解析结果存到dat_buf中
+ 141   2                      /*
+ 142   2                      *以下为接收正常时的处理
+ 143   2                      */
+ 144   2                      if(dat_buf.error == -1)
+ 145   2                      {
+ 146   3                              P60 = !P60;
+ 147   3                              if(dat_buf.com == 0xff00)       //判断是否为查询指令
+ 148   3                              {
+ 149   4                                      TheQuery(1,0x0017,6);
+ 150   4                              }
+ 151   3                              else if(dat_buf.com == 0xff01)
+ 152   3                              {
+ 153   4                                      TheQuery(1,0x0023,4);
+ 154   4                              }
+ 155   3                              else if(dat_buf.com == 0xff02)
+ 156   3                              {
+ 157   4                                      TheQuery(1,0x0029,4);
+ 158   4                              }
+ 159   3                              else if(dat_buf.com == 0xff03)
  160   3                              {
- 161   4                                      P62 = 0;
- 162   4                                      Delay1000ms();
- 163   4                                      P62 = 1;
- 164   4                              }
- 165   3                              if(dat_buf.error == 3)  //本机编号错误
- 166   3                              {
- 167   4                                      P63 = 0;
- 168   4                                      Delay1000ms();
- 169   4                                      P63 = 1;
+ 161   4                                      TheQuery(1,0x0031,4);
+ 162   4                              }
+ 163   3                              else if(dat_buf.com == 0xff04)
+ 164   3                              {
+ 165   4                                      TheQuery(1,0x0039,4);
+ 166   4                              }
+ 167   3                              else if(dat_buf.com == 0xff05)
+ 168   3                              {
+ 169   4                                      TheQuery(1,0x0041,4);
  170   4                              }
- 171   3                              if(dat_buf.error == 4)  //数据长度异常
+ 171   3                              else if(dat_buf.com == 0xff06)
  172   3                              {
- 173   4                                      P64 = 0;
- 174   4                                      Delay1000ms();
- 175   4                                      P64 = 1;
- 176   4                              }
- 177   3                              if(dat_buf.error == 6)  //crc检验未通过
-C51 COMPILER V9.56.0.0   ______                                                            03/18/2018 21:06:13 PAGE 4   
+ 173   4                                      TheQuery(1,0x0049,3);
+ 174   4                              }
+ 175   3      //                      else if(dat_buf.com == 0xff10)
+ 176   3      //                      {
+ 177   3      //                      
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 4   
 
- 178   3                              {
- 179   4                                      P65 = 0;
- 180   4                                      Delay1000ms();
- 181   4                                      P65 = 1;
- 182   4                              }
- 183   3                      }
- 184   2                      UATR1_clear_flag = 1;
- 185   2                      UATR1_rece_flag = 0;
- 186   2              }
- 187   1      }
- 188          
- 189          
- 190          
- 191          
- 192          
- 193          
- 194          
- 195          
- 196          
- 197          
- 198          
- 199          
- 200          
- 201          
- 202          
- 203          
- 204          
- 205          
- 206          
- 207          
- 208          
- 209          
- 210          
- 211          
+ 178   3      //                      }
+ 179   3      //                      else if(dat_buf.com == 0xff11)
+ 180   3      //                      {
+ 181   3      //                      
+ 182   3      //                      }
+ 183   3      //                      else if(dat_buf.com == 0xff12)
+ 184   3      //                      {
+ 185   3      //                      
+ 186   3      //                      }
+ 187   3      //                      else if(dat_buf.com == 0xff13)
+ 188   3      //                      {
+ 189   3      //                      
+ 190   3      //                      }
+ 191   3      //                      else if(dat_buf.com == 0xff14)
+ 192   3      //                      {
+ 193   3      //                      
+ 194   3      //                      }
+ 195   3      //                      else if(dat_buf.com == 0xff15)
+ 196   3      //                      {
+ 197   3      //                      
+ 198   3      //                      }
+ 199   3      //                      else if(dat_buf.com == 0xff16)
+ 200   3      //                      {
+ 201   3      //                      
+ 202   3      //                      }
+ 203   3      //                      else if(dat_buf.com == 0xff17)
+ 204   3      //                      {
+ 205   3      //                      
+ 206   3      //                      }
+ 207   3                              else if(dat_buf.com == 0xff18)
+ 208   3                              {
+ 209   4                                      TheQuery(2,0x0017,6);
+ 210   4                              }
+ 211   3                              else if(dat_buf.com == 0xff19)
+ 212   3                              {
+ 213   4                                      TheQuery(2,0x0023,4);
+ 214   4                              }
+ 215   3                              else if(dat_buf.com == 0xff1a)
+ 216   3                              {
+ 217   4                                      TheQuery(2,0x0029,4);
+ 218   4                              }
+ 219   3                              else if(dat_buf.com == 0xff1b)
+ 220   3                              {
+ 221   4                                      TheQuery(2,0x0031,4);
+ 222   4                              }
+ 223   3                              else if(dat_buf.com == 0xff1c)
+ 224   3                              {
+ 225   4                                      TheQuery(2,0x0039,4);
+ 226   4                              }
+ 227   3                              else if(dat_buf.com == 0xff1d)
+ 228   3                              {
+ 229   4                                      TheQuery(2,0x0041,4);
+ 230   4                              }               
+ 231   3                              else if(dat_buf.com == 0xff1e)
+ 232   3                              {
+ 233   4                                      TheQuery(2,0x0049,3);
+ 234   4                              }
+ 235   3                      }
+ 236   2                      /*
+ 237   2                      *以下代码包含数据接收异常时的处理
+ 238   2                      */
+ 239   2                      else                                                    //如果接收到的数据包有误
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 5   
+
+ 240   2                      {
+ 241   3                              P67 = !P67;;
+ 242   3                              if(dat_buf.error == 2)          //本机地址错误，进行相应的处理，可忽略，下同
+ 243   3                              {
+ 244   4                                      P62 = 0;
+ 245   4                                      Delay1000ms();
+ 246   4                                      P62 = 1;
+ 247   4                              }
+ 248   3                              if(dat_buf.error == 3)  //本机编号错误
+ 249   3                              {
+ 250   4                                      P63 = 0;
+ 251   4                                      Delay1000ms();
+ 252   4                                      P63 = 1;
+ 253   4                              }
+ 254   3                              if(dat_buf.error == 4)  //数据长度异常
+ 255   3                              {
+ 256   4                                      P64 = 0;
+ 257   4                                      Delay1000ms();
+ 258   4                                      P64 = 1;
+ 259   4                              }
+ 260   3                              if(dat_buf.error == 6)  //crc检验未通过
+ 261   3                              {
+ 262   4                                      P65 = 0;
+ 263   4                                      Delay1000ms();
+ 264   4                                      P65 = 1;
+ 265   4                              }
+ 266   3                      }
+ 267   2                      UATR1_clear_flag = 1;
+ 268   2                      UATR1_rece_flag = 0;
+ 269   2              }
+ 270   1      }
+ 271          
+ 272          
+ 273          void TheQuery(char addr,int reg,char len)
+ 274          {
+ 275   1              Send2String(MakeModbus(addr,0x03,reg,len),8);
+ 276   1              while(!UATR2_rece_flag);
+ 277   1              modbus_struct_buf = ModbusParsing(modbus_buf);
+ 278   1              Send1Data(0X00);
+ 279   1              Send1Data(0X01);
+ 280   1              Send1Data(0X17);
+ 281   1              Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
+ 282   1                                                                              modbus_struct_buf.dat),modbus_struct_buf.len + 10);
+ 283   1              while(P07 == 0);
+ 284   1              UATR2_rece_flag = 0;
+ 285   1              modbus_count = 0;
+ 286   1      }
+ 287          
+ 288          
+ 289          
+ 290          
+ 291          
+ 292          
+ 293          
+ 294          
+ 295          
+ 296          
+ 297          
+ 298          
+ 299          
+ 300          
+ 301          
+C51 COMPILER V9.56.0.0   ______                                                            04/09/2018 09:02:28 PAGE 6   
+
+ 302          
+ 303          
+ 304          
+ 305          
+ 306          
+ 307          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    633    ----
+   CODE SIZE        =    892    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    561    ----
    PDATA SIZE       =   ----    ----

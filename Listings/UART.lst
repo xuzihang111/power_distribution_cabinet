@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   UART                                                              03/17/2018 07:40:13 PAGE 1   
+C51 COMPILER V9.56.0.0   UART                                                              04/08/2018 20:24:20 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE UART
@@ -12,7 +12,7 @@ line level    source
    2          #include <UART.H>
    3          
    4          
-   5          void Uart1Init(void)            //9600bps@24.000MHz
+   5          void Uart1Init(void)            //115200bps@24.000MHz
    6          {
    7   1              SCON = 0x50;            //8位数据,可变波特率
    8   1              AUXR |= 0x40;           //定时器1时钟为Fosc,即1T
@@ -62,7 +62,7 @@ line level    source
   52          void Send2String(char *s,len)//串口2发送数组
   53          {
   54   1              int i;
-C51 COMPILER V9.56.0.0   UART                                                              03/17/2018 07:40:13 PAGE 2   
+C51 COMPILER V9.56.0.0   UART                                                              04/08/2018 20:24:20 PAGE 2   
 
   55   1          for(i = 0; i < len;i++)       //检测字符串结束标志
   56   1          {

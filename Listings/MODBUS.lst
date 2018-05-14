@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   MODBUS                                                            03/16/2018 15:24:34 PAGE 1   
+C51 COMPILER V9.56.0.0   MODBUS                                                            04/08/2018 20:21:40 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE MODBUS
@@ -62,7 +62,7 @@ line level    source
   52   1              uchar uchCRCHi=0xff;  
   53   1              uchar uchCRCLo=0xff;  
   54   1              uint  uindex;  
-C51 COMPILER V9.56.0.0   MODBUS                                                            03/16/2018 15:24:34 PAGE 2   
+C51 COMPILER V9.56.0.0   MODBUS                                                            04/08/2018 20:21:40 PAGE 2   
 
   55   1              while(len--)  
   56   1              {  
@@ -76,7 +76,7 @@ line level    source
   64   1              return DataCRC;  
   65   1      }  
   66          
-  67          char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
+  67          char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)//合成modbus数据包
   68          {
   69   1              char xdata return_buf[10];
   70   1              TYPE_CRC crc ;
@@ -97,7 +97,7 @@ line level    source
   85   1              return return_buf;
   86   1      }
   87          
-  88          TYPE_MODBUS ModbusParsing(uchar *buf)
+  88          TYPE_MODBUS ModbusParsing(uchar *buf)   //解析modbus数据包
   89          {
   90   1              
   91   1              static uchar xdata out_put[150];
@@ -126,7 +126,7 @@ line level    source
  114   1              if((crc.High == buf[modbus.len + 4]) && (crc.Low == buf[modbus.len + 5]))
  115   1              {
  116   2                      P62 = !P62;
-C51 COMPILER V9.56.0.0   MODBUS                                                            03/16/2018 15:24:34 PAGE 3   
+C51 COMPILER V9.56.0.0   MODBUS                                                            04/08/2018 20:21:40 PAGE 3   
 
  117   2                      modbus.error = 0;
  118   2                      return modbus;

@@ -7,7 +7,7 @@
 /*本机信息，使用时请根据需要自行修改本机信息*/
 
 #define ADDRESS		0Xff60	//本机地址
-#define NUMBER		0X00	//本机编号
+#define NUMBER		0X01	//本机编号
 
 /*错误类型*/
 #define ERROR_NONE 			-1	//无错误

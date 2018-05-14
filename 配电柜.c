@@ -23,25 +23,26 @@ void TheQuery(char addr,int reg,char len);
 
 void main()
 {
-	Uart1Init();			//9600bps@24.000MHz
-	Uart2Init();		//9600bps@24.000MHz
+	Uart1Init();			//115200bps@24.000MHz		通讯协议接收与发送
+	Uart2Init();			//9600bps@24.000MHz		modbus协议收发	
 	EA = 1;
+	P2M0 = 0XFF;
+	P2M1 = 0X00;
 	while(1)
 	{
 		DataDarsing();
 		
 		
-		if(!P73)
+		if(!P73)//测试
 		{	
-			Send2String(MakeModbus(0x01,0x03,0x0017,50),8);
+			Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//度ABC三项电压有效值
 			P66 = 0;
-			while(!UATR2_rece_flag);
+			while(!UATR2_rece_flag);	//等待数据返回
 			P66 = 1;
 			modbus_struct_buf = ModbusParsing(modbus_buf);
 			Send1Data(0X00);
 			Send1Data(0X01);
 			Send1Data(0X17);
-//			Send1String(aaa,110);
 
 			Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10, modbus_struct_buf.dat),modbus_struct_buf.len + 10);
 			
@@ -50,6 +51,14 @@ void main()
 			P67 = 1;
 			UATR2_rece_flag = 0;
 			modbus_count = 0;
+		}
+		if(!P70)
+		{
+			P24 = 0;
+		}
+		else
+		{
+			P24 = 1;
 		}
 	}
 }
@@ -157,101 +166,72 @@ void DataDarsing(void)
 			}
 			else if(dat_buf.com == 0xff05)
 			{
-				Send2String(MakeModbus(0x01,0x03,0x0041,4),8);
-				while(!UATR2_rece_flag);
-				modbus_struct_buf = ModbusParsing(modbus_buf);
-				Send1Data(0X00);
-				Send1Data(0X01);
-				Send1Data(0X17);
-				Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
-												modbus_struct_buf.dat),modbus_struct_buf.len + 10);
-				while(P07 == 0);
-				UATR2_rece_flag = 0;
-				modbus_count = 0;
+				TheQuery(1,0x0041,4);
 			}
 			else if(dat_buf.com == 0xff06)
 			{
-				Send2String(MakeModbus(0x01,0x03,0x0049,3),8);
-				while(!UATR2_rece_flag);
-				modbus_struct_buf = ModbusParsing(modbus_buf);
-				Send1Data(0X00);
-				Send1Data(0X01);
-				Send1Data(0X17);
-				Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
-												modbus_struct_buf.dat),modbus_struct_buf.len + 10);
-				while(P07 == 0);
-				UATR2_rece_flag = 0;
-				modbus_count = 0;
+				TheQuery(1,0x0049,3);
 			}
-			else if(dat_buf.com == 0xff10)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff11)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff12)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff13)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff14)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff15)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff16)
-			{
-			
-			}
-			else if(dat_buf.com == 0xff17)
-			{
-			
-			}
+//			else if(dat_buf.com == 0xff10)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff11)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff12)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff13)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff14)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff15)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff16)
+//			{
+//			
+//			}
+//			else if(dat_buf.com == 0xff17)
+//			{
+//			
+//			}
 			else if(dat_buf.com == 0xff18)
 			{
-			
+				TheQuery(2,0x0017,6);
 			}
 			else if(dat_buf.com == 0xff19)
 			{
-			
+				TheQuery(2,0x0023,4);
 			}
 			else if(dat_buf.com == 0xff1a)
 			{
-			
+				TheQuery(2,0x0029,4);
 			}
 			else if(dat_buf.com == 0xff1b)
 			{
-			
+				TheQuery(2,0x0031,4);
 			}
 			else if(dat_buf.com == 0xff1c)
 			{
-			
+				TheQuery(2,0x0039,4);
 			}
 			else if(dat_buf.com == 0xff1d)
 			{
-			
+				TheQuery(2,0x0041,4);
 			}		
 			else if(dat_buf.com == 0xff1e)
 			{
-				Send2String(MakeModbus(0x01,0x03,0x0049,3),8);
-				while(!UATR2_rece_flag);
-				modbus_struct_buf = ModbusParsing(modbus_buf);
-				Send1Data(0X00);
-				Send1Data(0X01);
-				Send1Data(0X17);
-				Send1String(AgreementPackaging(ADDRESS,NUMBER,0xff03, modbus_struct_buf.len + 10 , 
-												modbus_struct_buf.dat),modbus_struct_buf.len + 10);
-				while(P07 == 0);
-				UATR2_rece_flag = 0;
-				modbus_count = 0;			}
+				TheQuery(2,0x0049,3);
+			}
 		}
 		/*
 		*以下代码包含数据接收异常时的处理

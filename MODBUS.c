@@ -64,7 +64,7 @@ TYPE_CRC modbusCRC16(uchar *updata,uint len)
 	return DataCRC;  
 }  
 
-char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
+char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)//合成modbus数据包
 {
 	char xdata return_buf[10];
 	TYPE_CRC crc ;
@@ -85,7 +85,7 @@ char * MakeModbus(uchar addr, uchar com, int reg_addr, int len)
 	return return_buf;
 }
 
-TYPE_MODBUS ModbusParsing(uchar *buf)
+TYPE_MODBUS ModbusParsing(uchar *buf)	//解析modbus数据包
 {
 	
 	static uchar xdata out_put[150];
