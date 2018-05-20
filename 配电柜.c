@@ -6,17 +6,17 @@
 #include <ERROR.h>
 #include <stdio.H>
 
-TYPE_PACK dat_buf;		//½âÎöĞÅÏ¢µÄ½á¹¹Ìå
+TYPE_PACK dat_buf;		//è§£æä¿¡æ¯çš„ç»“æ„ä½“
 TYPE_MODBUS xdata modbus_struct_buf;
 
-char xdata UART1_recv_buf[300];	//½ÓÊÕ»º´æ
+char xdata UART1_recv_buf[300];	//æ¥æ”¶ç¼“å­˜
 char xdata modbus_buf[255];
 char xdata UART_send_buf[100];
 
-uint UATR1_buf_count;				//½ÓÊÕ»º´æ¼ÆÊı
-bit UATR1_clear_flag = 1;			//½ÓÊÕ»º´æ¼ÆÊıÇå³ı±êÖ¾
-bit UATR1_rece_flag;				//½ÓÊÕ±êÖ¾
-bit UATR2_rece_flag;				//½ÓÊÕ±êÖ¾
+uint UATR1_buf_count;				//æ¥æ”¶ç¼“å­˜è®¡æ•°
+bit UATR1_clear_flag = 1;			//æ¥æ”¶ç¼“å­˜è®¡æ•°æ¸…é™¤æ ‡å¿—
+bit UATR1_rece_flag;				//æ¥æ”¶æ ‡å¿—
+bit UATR2_rece_flag;				//æ¥æ”¶æ ‡å¿—
 unsigned char xdata modbus_count = 0;
 
 void Delay1000ms();
@@ -33,19 +33,19 @@ void main()
 //	Send2String("hrllo",5);
 	while(1)
 	{
-		WDT_CONTR |= 0X10;	//Î¹¹·
+		WDT_CONTR |= 0X10;	//å–‚ç‹—
 		stat_1 = 0;
 		DataDarsing();
 		
-		if(!key)//²âÊÔ or ¸´Î»¾¯±¨
+		if(!key)//æµ‹è¯• or å¤ä½è­¦æŠ¥
 		{	
-			Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//¶ÈABCÈıÏîµçÑ¹ÓĞĞ§Öµ	
+			Send2String(MakeModbus(0x01,0x03,0x0017,6),8);//åº¦ABCä¸‰é¡¹ç”µå‹æœ‰æ•ˆå€¼	
 			stat_4 = 0;
-			while(!UATR2_rece_flag);	//µÈ´ıÊı¾İ·µ»Ø
+			while(!UATR2_rece_flag);	//ç­‰å¾…æ•°æ®è¿”å›
 			stat_4 = 1;
 			modbus_struct_buf = ModbusParsing(modbus_buf);
 			
-			value1 = calculate(modbus_struct_buf.dat);		//¸¡µãĞÍ×ª»»
+			value1 = calculate(modbus_struct_buf.dat);		//æµ®ç‚¹å‹è½¬æ¢
 
 
 			sprintf(UART_send_buf,"Ua = %f",value1);
@@ -74,28 +74,28 @@ void main()
 }
 
 
-void Uart1() interrupt 4						//´®¿Ú1½ÓÊÕÖĞ¶Ï
+void Uart1() interrupt 4						//ä¸²å£1æ¥æ”¶ä¸­æ–­
 {
-	static uint UART1_rece_len;					//ÉùÃ÷¾²Ì¬±äÁ¿£¬ÓÃÓÚ´æ´¢Ó¦½ÓÊÕµ½µÄ×Ö½ÚÊı
+	static uint UART1_rece_len;					//å£°æ˜é™æ€å˜é‡ï¼Œç”¨äºå­˜å‚¨åº”æ¥æ”¶åˆ°çš„å­—èŠ‚æ•°
 	if (RI)
 	{
 		stat_3 = 0;
-		RI = 0;         						//Çå³ıS2RIÎ»		
-		if(SBUF == 0X7E && UATR1_clear_flag)	//ÅĞ¶Ïµ½Ö¡Í·£¬Êı¾İ´¦ÀíÍêºóUATR1_clear_flagÒªÖÃ1
+		RI = 0;         						//æ¸…é™¤S2RIä½		
+		if(SBUF == 0X7E && UATR1_clear_flag)	//åˆ¤æ–­åˆ°å¸§å¤´ï¼Œæ•°æ®å¤„ç†å®ŒåUATR1_clear_flagè¦ç½®1
 		{ 
-			UATR1_buf_count = 0;				//Çå³ı¼ÆÊı±êÖ¾
-			UATR1_clear_flag = 0;				//Çå³ı¼ÆÊı±êÖ¾Çå¿Õ±êÖ¾
+			UATR1_buf_count = 0;				//æ¸…é™¤è®¡æ•°æ ‡å¿—
+			UATR1_clear_flag = 0;				//æ¸…é™¤è®¡æ•°æ ‡å¿—æ¸…ç©ºæ ‡å¿—
 		}
 		
-		UART1_recv_buf[UATR1_buf_count] = SBUF;	//½«½ÓÊÕµ½µÄ×Ö·û´æ´¢
+		UART1_recv_buf[UATR1_buf_count] = SBUF;	//å°†æ¥æ”¶åˆ°çš„å­—ç¬¦å­˜å‚¨
 		
-		if(UATR1_buf_count == 7)				//½ÓÊÕµ½ÁË°ü³¤¶ÈÊı¾İ
+		if(UATR1_buf_count == 7)				//æ¥æ”¶åˆ°äº†åŒ…é•¿åº¦æ•°æ®
 		{
-			UART1_rece_len = UART1_recv_buf[6] << 8 | UART1_recv_buf[7];	//ºÏ³É°ü³¤¶ÈÊı¾İ
+			UART1_rece_len = UART1_recv_buf[6] << 8 | UART1_recv_buf[7];	//åˆæˆåŒ…é•¿åº¦æ•°æ®
 		}
-		if(UATR1_buf_count == UART1_rece_len - 1)//±¾°üÊı¾İ½ÓÊÕÍê±Ï
+		if(UATR1_buf_count == UART1_rece_len - 1)//æœ¬åŒ…æ•°æ®æ¥æ”¶å®Œæ¯•
 		{
-			UATR1_rece_flag = 1;				//¶ÔUART1_recv_buf´¦ÀíÍê³ÉºóÒª½«ÆäÇåÁã
+			UATR1_rece_flag = 1;				//å¯¹UART1_recv_bufå¤„ç†å®Œæˆåè¦å°†å…¶æ¸…é›¶
 		}
 		UATR1_buf_count++;		
 		stat_3 = 1;		
@@ -104,11 +104,11 @@ void Uart1() interrupt 4						//´®¿Ú1½ÓÊÕÖĞ¶Ï
 
 void Uart2() interrupt 8
 {
-	static uchar UART2_recv_len;				//ÉùÃ÷¾²Ì¬±äÁ¿£¬ÓÃÓÚ´æ´¢Ó¦½ÓÊÕµ½µÄ×Ö½ÚÊı
+	static uchar UART2_recv_len;				//å£°æ˜é™æ€å˜é‡ï¼Œç”¨äºå­˜å‚¨åº”æ¥æ”¶åˆ°çš„å­—èŠ‚æ•°
 	
 	if (S2CON & 0x01)
 	{
-		S2CON &= ~0x01;         				//Çå³ıS2RIÎ»
+		S2CON &= ~0x01;         				//æ¸…é™¤S2RIä½
 		
 		modbus_buf[modbus_count] = S2BUF; 
 		
@@ -149,14 +149,14 @@ void DataDarsing(void)
 {
 	if(UATR1_rece_flag)
 	{
-		dat_buf = UnpackAgreement(UART1_recv_buf);	//½âÎöÊı¾İ°ü£¬½«½âÎö½á¹û´æµ½dat_bufÖĞ
+		dat_buf = UnpackAgreement(UART1_recv_buf);	//è§£ææ•°æ®åŒ…ï¼Œå°†è§£æç»“æœå­˜åˆ°dat_bufä¸­
 		/*
-		*ÒÔÏÂÎª½ÓÊÕÕı³£Ê±µÄ´¦Àí
+		*ä»¥ä¸‹ä¸ºæ¥æ”¶æ­£å¸¸æ—¶çš„å¤„ç†
 		*/
 		if(dat_buf.error == -1)
 		{
 			stat_2 = !stat_2;
-			if(dat_buf.com == 0xff00)	//ÅĞ¶ÏÊÇ·ñÎª²éÑ¯Ö¸Áî
+			if(dat_buf.com == 0xff00)	//åˆ¤æ–­æ˜¯å¦ä¸ºæŸ¥è¯¢æŒ‡ä»¤
 			{
 				TheQuery(1,0x0017,6);
 			}
@@ -184,7 +184,7 @@ void DataDarsing(void)
 			{
 				TheQuery(1,0x0049,3);
 			}
-			else if(dat_buf.com == 0xff10)	//¶Ïµç
+			else if(dat_buf.com == 0xff10)	//æ–­ç”µ
 			{
 				relay_1 = 0;
 				ASK_ok();
@@ -247,19 +247,19 @@ void DataDarsing(void)
 			}
 			else 
 			{
-				error_2 = 0;	//ÎŞÓĞĞ§Ö¸Áî
+				error_2 = 0;	//æ— æœ‰æ•ˆæŒ‡ä»¤
 			}
 		}
 		/*
-		*ÒÔÏÂ´úÂë°üº¬Êı¾İ½ÓÊÕÒì³£Ê±µÄ´¦Àí
+		*ä»¥ä¸‹ä»£ç åŒ…å«æ•°æ®æ¥æ”¶å¼‚å¸¸æ—¶çš„å¤„ç†
 		*/
-		else							//Èç¹û½ÓÊÕµ½µÄÊı¾İ°üÓĞÎó
+		else							//å¦‚æœæ¥æ”¶åˆ°çš„æ•°æ®åŒ…æœ‰è¯¯
 		{
-			if(dat_buf.error == CRC_ERROR)	//crc¼ìÑéÎ´Í¨¹ı
+			if(dat_buf.error == CRC_ERROR)	//crcæ£€éªŒæœªé€šè¿‡
 			{
 				error_1 = 0;
 			}
-			else if(dat_buf.error == ADDRESS_ERROR)	//µØÖ·´íÎó
+			else if(dat_buf.error == ADDRESS_ERROR)	//åœ°å€é”™è¯¯
 			{
 				error_4 = 0;
 			}
@@ -306,10 +306,10 @@ void Init()
 	P0M1 = 0X00;
 	P4M0 = 0XFF;
 	P4M1 = 0X00;
-	WDT_CONTR = 0x06;		//¿´ÃÅ¹·128·ÖÆµ
-	WDT_CONTR |= 0X20;		//Æô¶¯¿´ÃÅ¹·
-	Uart1Init();			//115200bps@24.000MHz		Í¨Ñ¶Ğ­Òé½ÓÊÕÓë·¢ËÍ
-	Uart2Init();			//9600bps@24.000MHz		modbusĞ­ÒéÊÕ·¢	
+	WDT_CONTR = 0x06;		//çœ‹é—¨ç‹—128åˆ†é¢‘
+	WDT_CONTR |= 0X20;		//å¯åŠ¨çœ‹é—¨ç‹—
+	Uart1Init();			//115200bps@24.000MHz		é€šè®¯åè®®æ¥æ”¶ä¸å‘é€
+	Uart2Init();			//9600bps@24.000MHz		modbusåè®®æ”¶å‘	
 	Timer2Init();
 	EA = 1;
 	relay_1 = 1;
@@ -321,7 +321,7 @@ void Init()
 		WDT_CONTR &= ~0x80;
 	}
 	speed(200,0,1);
-}
+}//githubä¿®æ”¹
 
 
 
